@@ -1,0 +1,38 @@
+body{       
+background-color: aliceblue;
+}
+
+.titulo{
+    padding: 10px;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.line{
+    width: 50%; 
+    border-bottom: 1px solid #010c29;
+    margin: 0 auto; 
+    display: block; 
+    margin-bottom: 40px;
+
+}
+
+.card{
+    justify-content: center;
+    text-align: center;
+    margin-top: 10px;
+    margin: 100px 300px 5px  ;
+    padding: 100px;
+    background-color:rgb(162, 200, 231);
+    border-radius: 10px;
+}
+
+input{
+    border-radius: 10px;
+    border: none;
+    height: 30px;
+    width: 300px;
+    text-align: center;
+    
+}

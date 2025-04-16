@@ -1,5 +1,7 @@
 body{       
 background-color: aliceblue;
+justify-content: center;
+display:flexbox;
 }
 
 .titulo{
@@ -21,11 +23,11 @@ background-color: aliceblue;
 .card{
     justify-content: center;
     text-align: center;
-    margin-top: 10px;
     margin: 100px 300px 5px  ;
     padding: 100px;
     background-color:rgb(162, 200, 231);
     border-radius: 10px;
+    display: block;
 }
 
 input{
@@ -35,4 +37,24 @@ input{
     width: 300px;
     text-align: center;
     
+}
+
+button{
+    border: none;
+    border-radius: 10px;
+    height: 30px;
+    width: 100px;
+    font-family:  monospace;
+    background-color: #17213d;
+    color: aliceblue;
+}
+
+.logo{
+    justify-content: center;
+    padding: -10px;
+    height: 100px;
+    margin-left: 46%;
+    margin-top: 50px;
+    margin-block-end: -100px;
+ 
 }

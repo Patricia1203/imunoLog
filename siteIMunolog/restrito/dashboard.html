@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IMUNOLOG - Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #ecf0f1;
+      --accent-color: #007bff;
+      --danger-color: #e74c3c;
+      --bg-light: #ffffff;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --border-radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--secondary-color);
+      display: flex;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      min-height: 100vh;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      background-color: #34495e;
+      border-radius: 50%;
+    }
+
+    .user-info {
+      text-align: center;
+    }
+
+    .user-info h3 {
+      margin-top: 10px;
+      font-size: 1.2em;
+    }
+
+    .user-info p {
+      font-size: 0.8em;
+      color: #bdc3c7;
+    }
+
+    .nav {
+      list-style: none;
+      width: 100%;
+      padding: 0;
+    }
+
+    .nav li {
+      margin: 10px 0;
+    }
+
+    .nav a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .nav a:hover {
+      background-color: #34495e;
+    }
+
+    /* MAIN CONTENT */
+    .main {
+      flex: 1;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .kpis {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      flex: 1;
+      background-color: var(--bg-light);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      min-width: 180px;
+    }
+
+    .card h4 {
+      font-size: 0.9em;
+      margin-bottom: 5px;
+    }
+
+    .card p {
+      font-size: 1.6em;
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+
+    .charts {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    .chart-box {
+      background-color: var(--bg-light);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-box canvas {
+      flex-grow: 1;
+    }
+
+    .combined-visualization {
+      display: flex;
+      gap: 20px;
+      background-color: var(--bg-light);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .area-chart-container {
+      flex: 2;
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .area-chart-container h4 {
+      margin-bottom: 10px;
+    }
+
+    .area-chart-container canvas {
+      flex-grow: 1;
+    }
+
+    .calendar-container {
+      flex: 1;
+      text-align: center;
+    }
+
+    .calendar-container h4 {
+      margin-bottom: 10px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+
+    .calendar-grid div {
+      padding: 10px;
+      background-color: #ecf0f1;
+      border-radius: 8px;
+      font-size: 0.9em;
+      text-align: center;
+    }
+
+    .calendar-grid .highlight {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .calendar-grid .alert-date {
+      background-color: var(--danger-color);
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sidebar">
+    <div class="avatar">
+        <img src="../imagem/menina.png" alt="Logo IMUNOTRACK" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+    </div>
+    <div class="user-info">
+      <h3>IMUNOTRACK</h3>
+      <p>imunolog@ong.org</p>
+    </div>
+    <ul class="nav">
+      <li><a href="./dashboard.html">Dashboard</a></li>
+      <li><a href="./alerta.html">Alertas</a></li>
+      <li><a href="./configuracao.html">Configurações</a></li>
+      <li><a href="./dados.html">Relatorio</a></li>
+      <li><a href="./transporte.html">Transportes</a></li>
+      <li><a href="../index.html">Sair</a></li>
+    </ul>
+  </div>
+  <div class="main">
+    <div class="kpis">
+      <div class="card">
+        <h4>Média de Temperatura das Leituras</h4>
+        <p>3,2°C</p>
+      </div>
+      <div class="card">
+        <h4>Número de Transportes Registrados</h4>
+        <p>5</p>
+      </div>
+      <div class="card">
+        <h4>Leituras Fora da Faixa Ideal</h4>
+        <p style="color: var(--danger-color)">2</p>
+      </div>
+      <div class="card">
+        <h4>Total de Leituras Efetuadas</h4>
+        <p>12</p>
+      </div>
+    </div>
+
+    <div class="charts">
+      <div class="chart-box">
+        <h4>Variação da Temperatura</h4>
+        <canvas id="graficoLinha"></canvas>
+      </div>
+      <div class="chart-box">
+        <h4>Transporte Utilizado</h4>
+        <canvas id="graficoTransporte"></canvas>
+      </div>
+    </div>
+
+    <div class="combined-visualization">
+      <div class="area-chart-container">
+        <h4>Leituras de Temperatura por Sensor (com Alertas)</h4>
+        <canvas id="combinedChart"></canvas>
+      </div>
+      <div class="calendar-container">
+        <h4>Datas de Manutenção e Alertas</h4>
+        <div class="calendar-grid">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Gráfico de Linha Existente
+    const ctxLinha = document.getElementById('graficoLinha').getContext('2d');
+    new Chart(ctxLinha, {
+      type: 'line',
+      data: {
+        labels: ['06:00h', '06:15h', '06:30h', '06:45h', '07:05h', '07:20h', '07:35h', '07:50h'],
+        datasets: [{
+          label: 'Temperatura Média (°C)',
+          data: [2.3, 9.2, 4.4, 5.6, 0.2, 3.5, 6.3, 8.0],
+          borderColor: '#007bff',
+          backgroundColor: 'rgba(0, 123, 255, 0.1)',
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            min: 0,
+            max: 10,
+            ticks: {
+              stepSize: 2
+            }
+          }
+        }
+      }
+    });
+
+    // Gráfico de Doughnut Existente
+    new Chart(document.getElementById('graficoTransporte').getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Avião', 'Navio', 'Caminhão'],
+        datasets: [{
+          data: [3, 1, 1],
+          backgroundColor: ['#3498db', '#9b59b6', '#f1c40f']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+
+    // Novo Gráfico de Área com Alertas Visíveis (Uma linha por sensor)
+ // Novo Gráfico de Linha por Sensor com Alertas Visíveis
+ const ctxCombined = document.getElementById('combinedChart').getContext('2d');
+    const combinedChart = new Chart(ctxCombined, {
+      type: 'line',
+      data: {
+        labels: ['06:00h', '06:15h', '06:30h', '06:45h', '07:05h', '07:20h', '07:35h', '07:50h'],
+        datasets: [
+          {
+            label: 'Sensor A (°C)',
+            data: [2.3, 3.1, 2.8, 3.5, 3.0, 3.2, 2.9, 3.6],
+            borderColor: 'orange',
+            backgroundColor: 'rgba(255, 165, 0, 0.1)',
+            tension: 0.4,
+            pointBackgroundColor: (context) => {
+              // Exemplo: Alerta no Sensor A às 07:20h
+              return context.dataIndex === 5 ? 'red' : 'orange';
+            },
+            pointBorderColor: (context) => {
+              return context.dataIndex === 5 ? 'darkred' : 'darkorange';
+            },
+            pointRadius: 5,
+            pointHoverRadius: 7
+          },
+          {
+            label: 'Sensor B (°C)',
+            data: [9.2, 8.8, 9.5, 9.0, 8.5, 9.3, 9.1, 8.9],
+            borderColor: 'steelblue',
+            backgroundColor: 'rgba(70, 130, 180, 0.1)',
+            tension: 0.4,
+            pointBackgroundColor: (context) => {
+              // Exemplo: Alerta no Sensor B às 06:15h
+              return context.dataIndex === 1 ? 'red' : 'steelblue';
+            },
+            pointBorderColor: (context) => {
+              return context.dataIndex === 1 ? 'darkred' : 'darkslateblue';
+            },
+            pointRadius: 5,
+            pointHoverRadius: 7
+          },
+          {
+            label: 'Sensor C (°C)',
+            data: [4.4, 4.0, 4.7, 4.2, 4.5, 4.1, 4.3, 4.6],
+            borderColor: 'green',
+            backgroundColor: 'rgba(0, 128, 0, 0.1)',
+            tension: 0.4,
+            pointBackgroundColor: (context) => {
+              return 'green'; // Sem alertas neste exemplo
+            },
+            pointBorderColor: 'darkgreen',
+            pointRadius: 5,
+            pointHoverRadius: 7
+          },
+          {
+            label: 'Sensor D (°C)',
+            data: [5.6, 5.9, 5.3, 5.7, 6.0, 5.5, 5.8, 6.1],
+            borderColor: 'purple',
+            backgroundColor: 'rgba(128, 0, 128, 0.1)',
+            tension: 0.4,
+            pointBackgroundColor: (context) => {
+              // Exemplo: Alerta no Sensor D às 07:50h
+              return context.dataIndex === 7 ? 'red' : 'purple';
+            },
+            pointBorderColor: (context) => {
+              return context.dataIndex === 7 ? 'darkred' : 'darkmagenta';
+            },
+            pointRadius: 5,
+            pointHoverRadius: 7
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            min: 0,
+            max: 10,
+            ticks: {
+              stepSize: 2
+            },
+            title: {
+              display: true,
+              text: 'Temperatura (°C)'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Horário'
+            }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              labelPointStyle: (context) => {
+                const datasetIndex = context.datasetIndex;
+                const dataIndex = context.dataIndex;
+                const alertSensor = (datasetIndex === 0 && dataIndex === 5) || (datasetIndex === 1 && dataIndex === 1) || (datasetIndex === 3 && dataIndex === 7);
+                return {
+                  pointStyle: alertSensor ? 'triangle' : 'circle',
+                };
+              },
+              afterLabel: (context) => {
+                const datasetIndex = context.datasetIndex;
+                const dataIndex = context.dataIndex;
+                if ((datasetIndex === 0 && dataIndex === 5) || (datasetIndex === 1 && dataIndex === 1) || (datasetIndex === 3 && dataIndex === 7)) {
+                  return ' Alerta Registrado';
+                }
+                return null;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Lógica JavaScript para gerar e destacar o calendário
+    const calendarGrid = document.querySelector('.calendar-grid');
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function generateCalendar(month, year, highlightedDates, alertDates) {
+      calendarGrid.innerHTML = '';
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const firstDayOfMonth = new Date(year, month, 1).getDay();
+
+      for (let i = 0; i < firstDayOfMonth; i++) {
+        const emptyDiv = document.createElement('div');
+        calendarGrid.appendChild(emptyDiv);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.textContent = day;
+        const currentDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+        if (highlightedDates.includes(currentDate)) {
+          dayDiv.classList.add('highlight');
+          dayDiv.title = 'Manutenção do Sensor';
+        }
+
+        if (alertDates.includes(currentDate)) {
+          dayDiv.classList.add('alert-date');
+          dayDiv.title = 'Alerta de Variação';
+        }
+
+        calendarGrid.appendChild(dayDiv);
+      }
+
+      // Adiciona a legenda do calendário
+      const legendContainer = document.createElement('div');
+      legendContainer.style.marginTop = '15px';
+      legendContainer.style.textAlign = 'left';
+
+      const maintenanceLegend = document.createElement('span');
+      maintenanceLegend.style.display = 'inline-block';
+      maintenanceLegend.style.width = '10px';
+      maintenanceLegend.style.height = '10px';
+      maintenanceLegend.style.borderRadius = '50%';
+      maintenanceLegend.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
+      maintenanceLegend.style.marginRight = '5px';
+
+      const maintenanceText = document.createTextNode('Manutenção');
+
+      const alertLegend = document.createElement('span');
+      alertLegend.style.display = 'inline-block';
+      alertLegend.style.width = '10px';
+      alertLegend.style.height = '10px';
+      alertLegend.style.borderRadius = '50%';
+      alertLegend.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--danger-color');
+      alertLegend.style.marginLeft = '15px';
+      alertLegend.style.marginRight = '5px';
+
+      const alertText = document.createTextNode('Alerta');
+
+      legendContainer.appendChild(maintenanceLegend);
+      legendContainer.appendChild(maintenanceText);
+      legendContainer.appendChild(alertLegend);
+      legendContainer.appendChild(alertText);
+
+      calendarGrid.parentNode.appendChild(legendContainer);
+    }
+
+    const sensorMaintenanceDates = ['2025-04-27', '2025-05-10', '2025-05-15'];
+    const alertOccurredDates = [formatDate(tomorrow)]; // Marca amanhã como data de alerta
+    generateCalendar(currentMonth, currentYear, sensorMaintenanceDates, alertOccurredDates);
+  </script>
+</body>
+
+</html>

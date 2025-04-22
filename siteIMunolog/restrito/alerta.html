@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IMUNOLOG - Alertas</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #ecf0f1;
+      --accent-color: #007bff;
+      --danger-color: #e74c3c;
+      --bg-light: #ffffff;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --border-radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--secondary-color);
+      display: flex;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      min-height: 100vh;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      background-color: #34495e;
+      border-radius: 50%;
+    }
+
+    .user-info {
+      text-align: center;
+    }
+
+    .user-info h3 {
+      margin-top: 10px;
+      font-size: 1.2em;
+    }
+
+    .user-info p {
+      font-size: 0.8em;
+      color: #bdc3c7;
+    }
+
+    .nav {
+      list-style: none;
+      width: 100%;
+      padding: 0;
+    }
+
+    .nav li {
+      margin: 10px 0;
+    }
+
+    .nav a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .nav a:hover {
+      background-color: #34495e;
+    }
+
+    /* MAIN CONTENT */
+    .main {
+      flex: 1;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .alerts-table {
+      background-color: var(--bg-light);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+    }
+
+    .alerts-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .alerts-table th, .alerts-table td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .alerts-table th {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .alerts-table td {
+      background-color: #f9f9f9;
+    }
+
+    .alert-severity {
+      color: var(--danger-color);
+      font-weight: bold;
+    }
+
+    .alert-resolved {
+      color: #2ecc71;
+    }
+
+    .alert-unresolved {
+      color: var(--danger-color);
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="avatar">
+        <img src="../imagem/menina.png" alt="Logo IMUNOTRACK" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+    </div>
+    <div class="user-info">
+      <h3>IMUNOTRACK</h3>
+      <p>imunolog@ong.org</p>
+    </div>
+    <ul class="nav">
+      <li><a href="./dashboard.html">Dashboard</a></li>
+      <li><a href="./alerta.html">Alertas</a></li>
+      <li><a href="./configuracao.html">Configurações</a></li>
+      <li><a href="./dados.html">Relatorio</a></li>
+      <li><a href="./transporte.html">Transportes</a></li>
+      <li><a href="../index.html">Sair</a></li>
+    </ul>
+  </div>
+  <!-- Main Content -->
+  <div class="main">
+    <!-- Alertas -->
+    <div class="alerts-table">
+      <h3>Alertas de Temperatura</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Temperatura Registrada</th>
+            <th>Faixa de Temperatura</th>
+            <th>Localização</th>
+            <th>Status</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>18/04/2025</td>
+            <td>9.2°C</td>
+            <td>2°C - 8°C</td>
+            <td>Transporte #1</td>
+            <td><span class="alert-severity">Fora da Faixa</span></td>
+            <td><button>Resolver</button></td>
+          </tr>
+          <tr>
+            <td>19/04/2025</td>
+            <td>1.5°C</td>
+            <td>2°C - 8°C</td>
+            <td>Transporte #2</td>
+            <td><span class="alert-severity">Fora da Faixa</span></td>
+            <td><button>Resolver</button></td>
+          </tr>
+          <tr>
+            <td>20/04/2025</td>
+            <td>7.8°C</td>
+            <td>2°C - 8°C</td>
+            <td>Transporte #3</td>
+            <td><span class="alert-resolved">Resolvido</span></td>
+            <td><button disabled>Resolvido</button></td>
+          </tr>
+          <tr>
+            <td>21/04/2025</td>
+            <td>3.4°C</td>
+            <td>2°C - 8°C</td>
+            <td>Transporte #4</td>
+            <td><span class="alert-unresolved">Não Resolvido</span></td>
+            <td><button>Resolver</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>

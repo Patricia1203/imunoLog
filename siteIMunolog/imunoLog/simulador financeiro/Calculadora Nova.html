@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Financeiro</title>
+    <link rel="stylesheet" href="csscalculadora.css">
+</head>
+<body>
+    <img class="logo" src="C:\Users\User\Downloads\Captura_de_tela_2025-04-15_192234-removebg-preview (1).png" alt="">
+    <div class="card">
+    <h2 class="titulo"> Faça ja o seu orçamento!</h2> 
+    <div class="line"></div>
+    Insira quantos metros qudrados tem a área que você deseja monitorar: <br><br><input id="area" placeholder="Ex: 10">
+    <br><br>
+    <button onclick="calcular()">Ver Valor</button>
+    <br>
+    <div id="txt"></div>
+</div>
+</body>
+</html>
+<script>
+    function calcular() {
+    var m2 = Number(area.value);
+    var preco = m2 * 182
+    var material = m2 * 11
+    var sensores = m2 / 1.375
+
+    if (area.value == '') {
+        txt.innerHTML = `<br> Insira um valor`
+    } else if(area.value <= 0){
+        txt.innerHTML = `<br> Insira um valor maior que zero`}
+    else if(area.value != Number(area.value)){
+        txt.innerHTML = `<br> Insira um NÚMERO maior que zero`
+    }
+    else{
+    txt.innerHTML = `<br> Para a implementação dos nossos serviços em uma área de ${m2} m², o investimento será de R$${preco} para a instalação completa do sistema. <br>
+Esse projeto contará com ${sensores.toFixed(0)} sensores estrategicamente distribuídos, garantindo uma cobertura eficiente de toda a região monitorada. <br>
+Nosso sistema oferece monitoramento em tempo real, assegurando que o monitoramento da temperatura no transporte dos medicamentos ocorra sob as melhores condições possíveis. <br>
+Com sensores de alta precisão e uma dashboard intuitiva, você terá total visibilidade em cada etapa do processo.`;
+}
+
+}   
+
+
+</script>

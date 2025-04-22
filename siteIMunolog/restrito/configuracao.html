@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IMUNOLOG - Configurações</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #ecf0f1;
+      --accent-color: #007bff;
+      --danger-color: #e74c3c;
+      --bg-light: #ffffff;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --border-radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--secondary-color);
+      display: flex;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      min-height: 100vh;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      background-color: #34495e;
+      border-radius: 50%;
+    }
+
+    .user-info {
+      text-align: center;
+    }
+
+    .user-info h3 {
+      margin-top: 10px;
+      font-size: 1.2em;
+    }
+
+    .user-info p {
+      font-size: 0.8em;
+      color: #bdc3c7;
+    }
+
+    .nav {
+      list-style: none;
+      width: 100%;
+      padding: 0;
+    }
+
+    .nav li {
+      margin: 10px 0;
+    }
+
+    .nav a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .nav a:hover {
+      background-color: #34495e;
+    }
+
+    /* MAIN CONTENT */
+    .main {
+      flex: 1;
+      padding: 20px;
+      margin-left: 150px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .settings-container h3 {
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 10px;
+    }
+
+    .setting-group {
+      margin-bottom: 20px;
+    }
+
+    .setting-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .setting-group input[type="text"],
+    .setting-group input[type="email"],
+    .setting-group input[type="password"],
+    .setting-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: var(--border-radius);
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+
+    .setting-group button {
+      background-color: var(--accent-color);
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .setting-group button:hover {
+      background-color: #0056b3;
+    }
+
+    .setting-group .danger-button {
+      background-color: var(--danger-color);
+    }
+
+    .setting-group .danger-button:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="avatar">
+        <img src="../imagem/menina.png" alt="Logo IMUNOTRACK" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+    </div>
+    <div class="user-info">
+      <h3>IMUNOTRACK</h3>
+      <p>imunolog@ong.org</p>
+    </div>
+    <ul class="nav">
+      <li><a href="./dashboard.html">Dashboard</a></li>
+      <li><a href="./alerta.html">Alertas</a></li>
+      <li><a href="./configuracao.html">Configurações</a></li>
+      <li><a href="./dados.html">Relatorio</a></li>
+      <li><a href="./transporte.html">Transportes</a></li>
+      <li><a href="../index.html">Sair</a></li>
+    </ul>
+  </div>
+
+  <center>
+    
+  </center>
+  <div class="main">
+    <div class="settings-container">
+      <h2>Configurações da Conta</h2>
+      <br>
+
+      <div class="setting-group">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" value="Dandara Silva">
+      </div>
+
+      <div class="setting-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" value="imunolog@ong.org">
+      </div>
+
+      <div class="setting-group">
+        <label for="senha-atual">Senha Atual:</label>
+        <input type="password" id="senha-atual" placeholder="Digite sua senha atual">
+      </div>
+
+      <div class="setting-group">
+        <label for="nova-senha">Nova Senha:</label>
+        <input type="password" id="nova-senha" placeholder="Digite a nova senha">
+      </div>
+
+      <div class="setting-group">
+        <label for="confirmar-senha">Confirmar Nova Senha:</label>
+        <input type="password" id="confirmar-senha" placeholder="Confirme a nova senha">
+      </div>
+
+      <div class="setting-group">
+        <button>Salvar Alterações</button>
+      </div>
+
+      <h3>Preferências do Sistema</h3>
+
+      <div class="setting-group">
+        <label for="notificacoes">Notificações por Email:</label>
+        <select id="notificacoes">
+          <option value="ativado" selected>Ativado</option>
+          <option value="desativado">Desativado</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label for="tema">Tema:</label>
+        <select id="tema">
+          <option value="claro" selected>Claro</option>
+          <option value="escuro">Escuro</option>
+        </select>
+      </div>
+
+      <h3>Ações Destrutivas</h3>
+
+      <div class="setting-group">
+        <button class="danger-button">Excluir Conta</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

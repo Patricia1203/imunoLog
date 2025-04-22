@@ -178,6 +178,7 @@
         <option value="Básico">Básico</option>
         <option value="Avançado">Avançado</option>
       </select>
+      <input type="text" id="email" placeholder="Email Funcionario">
       <button onclick="cadastrarUsuario()">Cadastrar Usuário</button>
 
       <table>
@@ -186,6 +187,7 @@
             <th>ID</th>
             <th>Nome</th>
             <th>Tipo</th>
+            <th>Email</th>
           </tr>
         </thead>
         <tbody id="tabelaUsuarios">
@@ -193,26 +195,31 @@
             <td>#U001</td>
             <td>Ana Souza</td>
             <td>Básico</td>
+            <td>ana.souza@gmail.com</td>
           </tr>
           <tr>
             <td>#U002</td>
             <td>Bruno Lima</td>
             <td>Avançado</td>
+            <td>bruna.lima@gmail.com</td>
           </tr>
           <tr>
             <td>#U003</td>
             <td>Carla Mendes</td>
             <td>Básico</td>
+            <td>carla.mendes@gmail.com</td>
           </tr>
           <tr>
             <td>#U004</td>
             <td>Diego Santos</td>
             <td>Avançado</td>
+            <td>bruna.lima@gmail.com</td>
           </tr>
           <tr>
             <td>#U005</td>
             <td>Eduarda Pires</td>
             <td>Básico</td>
+            <td>eduarda.pires@gmail.com</td>
           </tr>
         </tbody>
       </table>
@@ -225,8 +232,9 @@
     function cadastrarUsuario() {
       const nome = document.getElementById('nome').value.trim();
       const tipo = document.getElementById('tipoUsuario').value;
+      const email = document.getElementById('email').value
 
-      if (!nome || !tipo) {
+      if (!nome || !tipo || !email ) {
         alert('Por favor, preencha todos os campos.');
         return;
       }
@@ -237,16 +245,19 @@
       const idCell = novaLinha.insertCell(0);
       const nomeCell = novaLinha.insertCell(1);
       const tipoCell = novaLinha.insertCell(2);
+      const emailCell = novaLinha.insertCell(3);
 
       idCell.innerText = `#U00${contadorID}`;
       nomeCell.innerText = nome;
       tipoCell.innerText = tipo;
+      emailCell.innerText = email;
 
       contadorID++;
 
       // Limpa os campos após cadastro
       document.getElementById('nome').value = '';
       document.getElementById('tipoUsuario').value = '';
+      document.getElementById('email').value = ''
     }
   </script>
 </body>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/ImunoLog</title>
+    <link rel="stylesheet" href="estyle.css">
+</head>
+
+<body>
+    <div class="container">
+        <div id="login">
+            <div class="caixa">
+                <img src="img/e57da6c3-056d-43f6-b41d-7aa31092ee10-removebg-preview.png" alt="Logo">
+                <h1>Login</h1>
+                <div class="email">
+                    <input type="text" id="codigo" placeholder="Código de Acesso" class="input-padrao" required>
+                </div>
+                <div class="senha">
+                    <input type="password" id="senha" placeholder="Senha" class="input-padrao" required>
+                </div>
+                <div class="entrar">
+                    <p>Ainda não tem uma conta? <b><a href="cadastro.html">Crie uma.</a></b></p>
+                    <button onclick="calco()" id="botaoLogin">Entrar</button><br><br>
+                    <div id="resp"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var codigoCorreto = "usuario123"
+        var senhaCorreta = "senha123"
+        var tentativas = 0
+
+        function calco() {
+            var cod = codigo.value
+            var sen = senha.value
+            var out = resp
+
+            if (cod == "" || sen == "") {
+                out.innerHTML = "Insira todos os campos"
+                out.style.color = "red"
+                return
+            }
+
+            while (tentativas < 3) {
+                if (cod == codigoCorreto && sen == senhaCorreta) {
+                    out.innerHTML = "Login realizado com sucesso!"
+                    out.style.color = "green"
+                    return
+                } else {
+                    tentativas++
+                    if (tentativas < 3) {
+                        out.innerHTML = "Código ou senha incorretos. Tentativa " + tentativas + "/3"
+                        out.style.color = "red"
+                    } else {
+                        out.innerHTML = "Esqueceu a senha? Sinto muito.<br>Entre em contato conosco."
+                        out.style.color = "red"
+                    }
+                    return
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

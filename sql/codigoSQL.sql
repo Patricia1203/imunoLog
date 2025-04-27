@@ -46,8 +46,8 @@ dataManutencao date,
 fkTransporte varchar(30) null,
 fkEmpresa int null,
 constraint chkSensorTransp foreign key (fkTransporte) references transporte(idTransporte),
-constraint chkSensorTranspEmpresa foreign key (fkEmpresa) references transporte(fkEmpresa),
-constraint chkSensorEmpresa foreign key (fkEmpresa) references empresa(idEmpresa));
+constraint chkSensorTranspEmpresa foreign key (fkEmpresa) references transporte(fkEmpresa)
+);
 
 
 create table protocolo (

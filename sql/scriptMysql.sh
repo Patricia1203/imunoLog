@@ -23,12 +23,12 @@ qtdSensor INT
 
 create table usuario (
 idUsuario int auto_increment,
-fkEmpresa int,
 nome varchar(50),
 usuarioRespons tinyint(1),
 senha varchar(30),
 email varchar(50),
 telefone varchar(30),
+fkEmpresa int,
 ativo tinyint(1),
 constraint fkUsuarioEmpresa foreign key (fkEmpresa) references empresa(idEmpresa),
 constraint pkUsuarioEmpresa primary key (idUsuario, fkEmpresa)
@@ -50,8 +50,8 @@ dataManutencao date,
 fkTransporte varchar(30) null,
 fkEmpresa int null,
 constraint chkSensorTransp foreign key (fkTransporte) references transporte(idTransporte),
-constraint chkSensorTranspEmpresa foreign key (fkEmpresa) references transporte(fkEmpresa),
-constraint chkSensorEmpresa foreign key (fkEmpresa) references empresa(idEmpresa));
+constraint chkSensorTranspEmpresa foreign key (fkEmpresa) references transporte(fkEmpresa)
+);
 
 
 create table protocolo (

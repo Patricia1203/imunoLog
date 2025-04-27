@@ -8,7 +8,7 @@ const SERIAL_BAUD_RATE = 9600;
 const SERVIDOR_PORTA = 3307;
 
 // habilita ou desabilita a inserção de dados no banco de dados
-const HABILITAR_OPERACAO_INSERIR = true;
+const HABILITAR_OPERACAO_INSERIR = false;
 
 // função para comunicação serial
 const serial = async (
@@ -66,7 +66,7 @@ const serial = async (
                 'INSERT INTO leitura(fkSensor, temperatura) VALUES (4, ?)',
                 [sensorAnalogico]
             );
-            console.log("valores inseridos no banco: ", sensorAnalogico + ", " /*+ sensorDigital*/);
+            console.log("valores inseridos no banco: ", sensorAnalogico /*+ sensorDigital*/);
 
         }
 

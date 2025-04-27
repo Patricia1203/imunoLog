@@ -107,7 +107,7 @@
       padding: 20px;
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
-      min-width: 180px;
+      min-width: 200px;
     }
 
     .card h4 {
@@ -123,7 +123,7 @@
 
     .charts {
       display: grid;
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: 680fr 4fr;
       gap: 20px;
     }
 
@@ -212,9 +212,9 @@
     </div>
     <ul class="nav">
       <li><a href="./dashboard.html">Dashboard</a></li>
-      <li><a href="./alerta.html">Alertas</a></li>
-      <li><a href="./configuracao.html">Configurações</a></li>
-      <li><a href="./dados.html">Relatorio</a></li>
+      <li><a href="#">Alertas</a></li>
+      <li><a href="#">Configurações</a></li>
+      <li><a href="#">Relatorio</a></li>
       <li><a href="./usuario.html">Usuario</a></li>
       <li><a href="../index.html">Sair</a></li>
     </ul>
@@ -222,12 +222,12 @@
   <div class="main">
     <div class="kpis">
       <div class="card">
-        <h4>Média de Temperatura das Leituras</h4>
-        <p>3,2°C</p>
+        <h4>Temperatura Ideal</h4>
+        <p>2°C a 8ºC</p>
       </div>
       <div class="card">
-        <h4>Número de Transportes Registrados</h4>
-        <p>5</p>
+        <h4>Temperatura Mais Alta Registrada</h4>
+        <p style="color: #e74c3c;">9.2</p>
       </div>
       <div class="card">
         <h4>Leituras Fora da Faixa Ideal</h4>
@@ -235,7 +235,7 @@
       </div>
       <div class="card">
         <h4>Total de Leituras Efetuadas</h4>
-        <p>12</p>
+        <p>8</p>
       </div>
     </div>
 
@@ -243,10 +243,6 @@
       <div class="chart-box">
         <h4>Variação da Temperatura</h4>
         <canvas id="graficoLinha"></canvas>
-      </div>
-      <div class="chart-box">
-        <h4>Transporte Utilizado</h4>
-        <canvas id="graficoTransporte"></canvas>
       </div>
     </div>
 
@@ -291,22 +287,6 @@
             }
           }
         }
-      }
-    });
-
-    // Gráfico de Doughnut Existente
-    new Chart(document.getElementById('graficoTransporte').getContext('2d'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Avião', 'Navio', 'Caminhão'],
-        datasets: [{
-          data: [3, 1, 1],
-          backgroundColor: ['#3498db', '#9b59b6', '#f1c40f']
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
       }
     });
 

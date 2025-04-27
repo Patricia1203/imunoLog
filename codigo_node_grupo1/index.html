@@ -73,7 +73,7 @@
         var tempo = {};
 
         function obterDados(grafico, endpoint) {
-            fetch('http://localhost:3300/sensores/' + endpoint)
+            fetch('http://localhost:3307/sensores/' + endpoint)
                 .then(response => response.json())
                 .then(valores => {
                     if (paginacao[endpoint] == null) {

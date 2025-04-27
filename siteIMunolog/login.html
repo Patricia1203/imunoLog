@@ -168,22 +168,22 @@
         <form onsubmit="event.preventDefault(); calcu();">
           <div class="two-columns">
             <div class="input-group">
-              <label for="razao">Razão Social</label>
-              <input type="text" id="razao" required />
+              <label for="nomeResponsavel">Nome do Responsável</label>
+              <input type="text" id="nomeResponsavel" required />
             </div>
             <div class="input-group">
-              <label for="cnpj">CNPJ</label>
-              <input type="number" id="cnpj" required />
+              <label for="nomeComercial">Nome Comercial</label>
+              <input type="text" id="nomeComercial" required />
             </div>
           </div>
           <div class="two-columns">
             <div class="input-group">
-              <label for="cep">CEP</label>
-              <input type="number" id="cep" required />
+              <label for="cnpj">CNPJ</label>
+              <input type="number" id="cnpj" required />
             </div>
             <div class="input-group">
-              <label for="numero">Número</label>
-              <input type="number" id="numero" required />
+              <label for="cep">CEP</label>
+              <input type="number" id="cep" required />
             </div>
           </div>
           <div class="two-columns">
@@ -192,13 +192,15 @@
               <input type="text" id="complemento" />
             </div>
             <div class="input-group">
-              <label for="email">E-mail</label>
-              <input type="email" id="email" required />
+              <label for="emailResponsavel">E-mail do Responsável</label>
+              <input type="email" id="emailResponsavel" required />
             </div>
           </div>
-          <div class="input-group">
-            <label for="quantidade">Quantidade de Sensores</label>
-            <input type="number" id="quantidade" required />
+          <div class="two-columns">
+            <div class="input-group">
+              <label for="telefoneResponsavel">Telefone do Responsável</label>
+              <input type="text" id="telefoneResponsavel" required />
+            </div>
           </div>
           <button type="submit" class="submit-btn">Cadastrar</button>
           <p class="switch-prompt">
@@ -240,43 +242,56 @@
     signupBtn.addEventListener("click", showSignup);
 
     function calcu() {
-      const razao = document.getElementById("razao").value;
-      const cep = document.getElementById("cep").value;
-      const cnpj = document.getElementById("cnpj").value;
-      const numero = document.getElementById("numero").value;
-      const email = document.getElementById("email").value;
-      const quantidade = document.getElementById("quantidade").value;
+      const nomeResponsavel = document.getElementById("nomeResponsavel")?.value;
+      const nomeComercial = document.getElementById("nomeComercial")?.value;
+      const cnpj = document.getElementById("cnpj")?.value;
+      const cep = document.getElementById("cep")?.value;
+      const complemento = document.getElementById("complemento")?.value;
+      const emailResponsavel = document.getElementById("emailResponsavel")?.value;
+      const telefoneResponsavel = document.getElementById("telefoneResponsavel")?.value;
+
       respCadastro.innerHTML = "";
 
-      if (!razao || !cep || !cnpj || !numero || !email || !quantidade) {
+      // Validações de campos obrigatórios
+      if (!nomeResponsavel || !nomeComercial || !cnpj || !cep || !emailResponsavel || !telefoneResponsavel) {
         respCadastro.innerHTML = "Por favor, preencha todos os campos!";
         respCadastro.style.color = "red";
         return;
       }
 
-      if (cep.length !== 8) {
-        respCadastro.innerHTML = "O CEP deve ter 8 dígitos.";
+      // Validação do formato do CNPJ (deve ter 14 dígitos numéricos)
+      if (cnpj.length !== 14 || isNaN(cnpj)) {
+        respCadastro.innerHTML = "O CNPJ deve ter 14 dígitos numéricos.";
         respCadastro.style.color = "red";
         return;
       }
 
-      if (cnpj.length !== 14) {
-        respCadastro.innerHTML = "O CNPJ deve ter 14 dígitos.";
+      // Validação do formato do CEP (deve ter 8 dígitos numéricos)
+      if (cep.length !== 8 || isNaN(cep)) {
+        respCadastro.innerHTML = "O CEP deve ter 8 dígitos numéricos.";
         respCadastro.style.color = "red";
         return;
       }
 
-      if (!email.includes("@") || email.indexOf("@") === email.length - 1) {
+      // Validação do e-mail do responsável
+      if (!emailResponsavel.includes("@") || emailResponsavel.indexOf("@") === emailResponsavel.length - 1) {
         respCadastro.innerHTML = "E-mail inválido.";
         respCadastro.style.color = "red";
         return;
       }
 
-      respCadastro.innerHTML = "Cadastro realizado com sucesso!<br>Seu login será enviado por e-mail.";
+      // Validação do telefone (não deve ser vazio, pode ser numérico ou incluir outros caracteres, como parênteses e traços)
+      const telefonePattern = /^[0-9\(\)\-\+\s]+$/;
+      if (!telefoneResponsavel || !telefonePattern.test(telefoneResponsavel)) {
+        respCadastro.innerHTML = "Telefone inválido. Verifique o formato.";
+        respCadastro.style.color = "red";
+        return;
+      }
+
+      // Se todas as validações passarem
+      respCadastro.innerHTML = "Cadastro realizado com sucesso!<br>Entraremos em contato em até 1 dia útil.";
       respCadastro.style.color = "green";
     }
-
-    let tentativas = 0;
 
     function calco() {
       const cod = document.getElementById("codigo").value;
@@ -296,14 +311,8 @@
           window.location.href = "restrito/dashboard.html";
         }, 1000);
       } else {
-        tentativas++;
-        if (tentativas >= 3) {
-          respLogin.innerHTML = "Muitas tentativas! Tente novamente mais tarde.";
-          respLogin.style.color = "red";
-        } else {
-          respLogin.innerHTML = `Código ou senha incorretos. Tentativa ${tentativas}/3.`;
-          respLogin.style.color = "red";
-        }
+        respLogin.innerHTML = "Código ou senha incorretos.";
+        respLogin.style.color = "red";
       }
     }
 

@@ -48,26 +48,24 @@ nome varchar(30),
 dataInstalacao date,
 dataManutencao date,
 fkTransporte varchar(30) null,
-fkEmpresa int null,
-constraint chkSensorTransp foreign key (fkTransporte) references transporte(idTransporte),
-constraint chkSensorTranspEmpresa foreign key (fkEmpresa) references transporte(fkEmpresa)
+constraint chkSensorTransp foreign key (fkTransporte) references transporte(idTransporte)
 );
 
 
 create table protocolo (
 idProtocolo int auto_increment,
 fkTransporte varchar(30),
-fkEmpresa int,
 responsavel varchar(50),
 statusProtocolo varchar(45),
 cepPartida char(9),
 cepDestino char(9),
 dataPartida date,
 dataDestino date,
+lote int,
+qtdPLote INT,
 ocorrenciaSens varchar(150),
 constraint chkProtocoloTransp foreign key (fkTransporte) references transporte(idTransporte),
-constraint chkProtocoloTranspEmpresa foreign key (fkEmpresa) references transporte(fkEmpresa),
-constraint pkProtocoloTranspEmpr primary key (idProtocolo, fkTransporte, fkEmpresa)
+constraint pkProtocoloTranspEmpr primary key (idProtocolo, fkTransporte)
 );
 
 create table leitura (
@@ -116,30 +114,30 @@ INSERT INTO transporte (idtransporte, tipoTransporte, fkEmpresa) VALUES
 ('CE9900U', 'Navio Refrigerado', 575),
 ('PE1122V', 'Caminhão Refrigerado', 576);
 
-INSERT INTO sensor (nome, dataInstalacao, dataManutencao, fkTransporte, fkEmpresa) VALUES
-('SensorTemp-001', '2025-01-10', '2025-04-15', 'RS1122B', 573),
-('SensorTemp-002', '2025-02-15', NULL, 'RS1122B', 573),
-('SensorTemp-003', '2025-04-20', NULL, 'ES5566E', 575),
-('SensorTemp-004', '2025-04-12', NULL, 'BA7788F', 576),
-('SensorTemp-005', '2025-02-18', NULL, 'MT9900H', 573),
-('SensorTemp-006', '2025-02-01', NULL, 'GO1122K', 574),
-('SensorTemp-007', '2025-04-05', NULL, 'AM3344L', 575),
-('SensorTemp-008', '2025-04-15', NULL, 'RR5566M', 576),
-('SensorTemp-009', '2025-02-20', NULL, 'AP7788N', 573),
-('SensorTemp-010', '2025-04-10', NULL, 'AC1122Q', 575),
-('SensorTemp-011', '2025-04-15', NULL, 'RO3344R', 576),
-('SensorTemp-012', '2025-02-01', NULL, 'DF5566S', 573),
-('SensorTemp-013', '2025-03-05', NULL, 'MS7788T', 574),
-('SensorTemp-014', '2025-04-10', NULL, 'CE9900U', 575),
-('SensorTemp-015', '2025-04-15', NULL, 'PE1122V', 576);
+INSERT INTO sensor (nome, dataInstalacao, dataManutencao, fkTransporte) VALUES
+('SensorTemp-001', '2025-01-10', '2025-04-15', 'RS1122B'),
+('SensorTemp-002', '2025-02-15', NULL, 'RS1122B'),
+('SensorTemp-003', '2025-04-20', NULL, 'ES5566E'),
+('SensorTemp-004', '2025-04-12', NULL, 'BA7788F'),
+('SensorTemp-005', '2025-02-18', NULL, 'MT9900H'),
+('SensorTemp-006', '2025-02-01', NULL, 'GO1122K'),
+('SensorTemp-007', '2025-04-05', NULL, 'AM3344L'),
+('SensorTemp-008', '2025-04-15', NULL, 'RR5566M'),
+('SensorTemp-009', '2025-02-20', NULL, 'AP7788N'),
+('SensorTemp-010', '2025-04-10', NULL, 'AC1122Q'),
+('SensorTemp-011', '2025-04-15', NULL, 'RO3344R'),
+('SensorTemp-012', '2025-02-01', NULL, 'DF5566S'),
+('SensorTemp-013', '2025-03-05', NULL, 'MS7788T'),
+('SensorTemp-014', '2025-04-10', NULL, 'CE9900U'),
+('SensorTemp-015', '2025-04-15', NULL, 'PE1122V');
 
-INSERT INTO protocolo (responsavel, statusProtocolo, cepPartida, cepDestino, dataPartida, dataDestino, fkTransporte, fkEmpresa, ocorrenciaSens) VALUES
-('Rafael Cunha Lopes', 'EM TRANSITO', '04547-000', '01311-000', '2023-04-28', '2023-06-01', 'RS1122B', 573, 'Sensor com falha na leitura da temperatura - Arumado'),
-('Ana Maria Santos', 'A CAMINHO DO LOCAL DE CARREGAMENTO', '01311-000', '05010-000', '2023-04-28', '2023-05-28', 'SC3344C', 574, 'Nenhuma Ocorrência'),
-('Rafael Cunha0 Lopes', 'A CAMINHO DO LOCAL DE CARREGAMENTO', '05010-000', '04094-000', '2023-04-28', '2023-06-05', 'ES5566E', 575, 'Nenhuma Ocorrência'),
-('Beatriz Moura', 'CANCELADO', '04547-000', '01311-000', '2023-04-25', '2023-05-30', 'MT9900H', 573, 'Nenhuma Ocorrência'),
-('Bruno Martins Pereira', 'A CAMINHO DO LOCAL DE CARREGAMENTO', '01311-000', '05010-000', '2023-04-28', '2023-04-28', 'GO1122K', 574, 'Nenhuma Ocorrência'),
-('Larissa Souza Barbosa', 'INICIANDO TRANSPORTE', '04094-000', '04547-000', '2025-04-28', '2025-04-30', 'BA7788F', 576, 'Nenhuma Ocorrência');
+INSERT INTO protocolo (responsavel, statusProtocolo, cepPartida, cepDestino, dataPartida, dataDestino, fkTransporte, lote,qtdPLote, ocorrenciaSens) VALUES
+('Rafael Cunha Lopes', 'EM TRANSITO', '04547-000', '01311-000', '2023-04-28', '2023-06-01', 'RS1122B', 25, 21,  'Sensor com falha na leitura da temperatura - Arumado'),
+('Ana Maria Santos', 'A CAMINHO DO LOCAL DE CARREGAMENTO', '01311-000', '05010-000', '2023-04-28', '2023-05-28', 'SC3344C', 30, 32, 'Nenhuma Ocorrência'),
+('Rafael Cunha0 Lopes', 'A CAMINHO DO LOCAL DE CARREGAMENTO', '05010-000', '04094-000', '2023-04-28', '2023-06-05', 'ES5566E', 39, 27, 'Nenhuma Ocorrência'),
+('Beatriz Moura', 'CANCELADO', '04547-000', '01311-000', '2023-04-25', '2023-05-30', 'MT9900H', 28, 26, 'Nenhuma Ocorrência'),
+('Bruno Martins Pereira', 'A CAMINHO DO LOCAL DE CARREGAMENTO', '01311-000', '05010-000', '2023-04-28', '2023-04-28', 'GO1122K', 31, 34, 'Nenhuma Ocorrência'),
+('Larissa Souza Barbosa', 'INICIANDO TRANSPORTE', '04094-000', '04547-000', '2025-04-28', '2025-04-30', 'BA7788F', 30, 29,'Nenhuma Ocorrência');
 
 INSERT INTO leitura (fkProtocolo, fkSensor, temperatura, dataLeitura) VALUES
 (1, 1, 5.2, '2023-06-01 08:00:00'),

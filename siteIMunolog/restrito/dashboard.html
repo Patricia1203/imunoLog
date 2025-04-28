@@ -7,6 +7,11 @@
   <title>IMUNOLOG - Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
   <style>
+    ::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+    }
+
     :root {
       --primary-color: #2c3e50;
       --secondary-color: #ecf0f1;
@@ -107,7 +112,7 @@
       padding: 20px;
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
-      min-width: 180px;
+      min-width: 20px;
     }
 
     .card h4 {
@@ -128,38 +133,58 @@
     }
 
     .chart-box {
+      width: 100%;
       background-color: var(--bg-light);
-      padding: 20px;
+      padding: 55px;
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
-      height: 300px;
+      height: 420px;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
     }
 
     .chart-box canvas {
-      flex-grow: 1;
+      flex-grow: 1.5;
+    }
+
+    .chart-box select {
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+      background-color: var(--secondary-color);
+      color: #2c3e50;
+      transition: 0.3s;
+    }
+
+    .chart-box select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 5px var(--accent-color);
+      background-color: var(--bg-light);
     }
 
     .combined-visualization {
       display: flex;
-      gap: 20px;
+      gap: 50px;
       background-color: var(--bg-light);
-      padding: 20px;
+      padding: 30px;
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
-      margin-bottom: 20px;
+      margin-bottom: 450px;
     }
 
     .area-chart-container {
       flex: 2;
-      height: 300px;
+      height: 250px;
       display: flex;
       flex-direction: column;
     }
 
     .area-chart-container h4 {
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
 
     .area-chart-container canvas {
@@ -199,19 +224,21 @@
       color: white;
     }
   </style>
+
 </head>
 
 <body>
   <div class="sidebar">
     <div class="avatar">
-        <img src="../imagem/menina.png" alt="Logo IMUNOTRACK" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+      <img src="../imagem/menina.png" alt="Logo IMUNOTRACK"
+        style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
     </div>
     <div class="user-info">
-      <h3>IMUNOTRACK</h3>
+      <h3>Fernanda Caramico</h3>
       <p>imunolog@ong.org</p>
     </div>
     <ul class="nav">
-      <li><a href="./dashboard.html">Dashboard</a></li>
+      <li><a href="./dashboard.html">Painel de Desempenho</a></li>
       <li><a href="./alerta.html">Alertas</a></li>
       <li><a href="./configuracao.html">Configurações</a></li>
       <li><a href="./dados.html">Relatorio</a></li>
@@ -222,61 +249,85 @@
   <div class="main">
     <div class="kpis">
       <div class="card">
-        <h4>Média de Temperatura das Leituras</h4>
-        <p>3,2°C</p>
+        <h4>Transporte Atuais Em Riscos</h4>
+        <br>
+        <p style="color: var(--danger-color)">1/4 - Transportes <br> UU1234A - Caminhão:Sensor 004</p>
       </div>
       <div class="card">
-        <h4>Número de Transportes Registrados</h4>
-        <p>5</p>
+        <h4>Risco de Perda de Produtos no Momento</h4>
+        <br>
+        <p style="color: var(--danger-color)">1.8% por Lote</p>
       </div>
       <div class="card">
-        <h4>Leituras Fora da Faixa Ideal</h4>
-        <p style="color: var(--danger-color)">2</p>
+        <h4>Transporte Feitos Sem Ocorrência</h4>
+        <br>
+        <p>96%</p>
       </div>
       <div class="card">
-        <h4>Total de Leituras Efetuadas</h4>
-        <p>12</p>
+        <h4>Quantidade de Sensores em Leitura no Momento</h4>
+        <br>
+        <p>4</p>
       </div>
     </div>
 
     <div class="charts">
       <div class="chart-box">
-        <h4>Variação da Temperatura</h4>
-        <canvas id="graficoLinha"></canvas>
+        <h4>Variação da Temperatura por Sensor</h4>
+        <select id="sensorSelect">
+          <option value="sensor1">Sensor 1</option>
+          <option value="sensor2">Sensor 2</option>
+          <option value="sensor3">Sensor 3</option>
+          <option value="sensor4">Sensor 4</option>
+          <!-- Adicione mais opções de sensores conforme necessário -->
+        </select>
+
+        <canvas id="graficoLinha" style="height: 300px; width: 100%;"></canvas>
+
       </div>
       <div class="chart-box">
-        <h4>Transporte Utilizado</h4>
+        <h4>Comparação de Ocorrências por Meses Decorridos(2025)</h4>
+        <br>
         <canvas id="graficoTransporte"></canvas>
       </div>
     </div>
-
     <div class="combined-visualization">
       <div class="area-chart-container">
-        <h4>Leituras de Temperatura por Sensor (com Alertas)</h4>
+        <h4>Leituras de Temperatura por Sensor</h4>
         <canvas id="combinedChart"></canvas>
       </div>
       <div class="calendar-container">
-        <h4>Datas de Manutenção e Alertas</h4>
+        <h4>Calendario de Alertas</h4>
         <div class="calendar-grid">
         </div>
       </div>
     </div>
+
 
   </div>
 
   <script>
     // Gráfico de Linha Existente
     const ctxLinha = document.getElementById('graficoLinha').getContext('2d');
-    new Chart(ctxLinha, {
+    const dadosSensores = {
+      sensor1: [2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 2.8, 2.6], // Dados do Sensor 1
+      sensor2: [2.4, 3.4, 4.4, 5.4, 6.4, 5.4, 4.4, 3.4], // Dados do Sensor 2
+      sensor3: [2.8, 3.0, 4.0, 5.0, 6.0, 4.0, 3.3, 2.6], // Dados do Sensor 3
+      sensor4: [3.2, 3.5, 4.3, 5.6, 6.5, 7.2, 8.3, 9.2], // Dados do Sensor 4
+      // Adicione mais sensores aqui, se necessário
+    };
+
+    const labels = ['06:50h', '07:05h', '07:20h', '07:35h', '07:40h', '07:55h', '08:15h', '08:30h'];
+
+    let grafico = new Chart(ctxLinha, {
       type: 'line',
       data: {
-        labels: ['06:00h', '06:15h', '06:30h', '06:45h', '07:05h', '07:20h', '07:35h', '07:50h'],
+        labels: labels,
         datasets: [{
-          label: 'Temperatura Média (°C)',
-          data: [2.3, 9.2, 4.4, 5.6, 0.2, 3.5, 6.3, 8.0],
+          label: 'Temperatura Atual (°C)',
+          data: dadosSensores.sensor1, // Dados iniciais para o Sensor 1
           borderColor: '#007bff',
           backgroundColor: 'rgba(0, 123, 255, 0.1)',
-          tension: 0.4
+          tension: 0.5
         }]
       },
       options: {
@@ -288,94 +339,137 @@
             max: 10,
             ticks: {
               stepSize: 2
+            },
+            title: {
+              display: true,
+              text: 'Temperatura (°C)'
+
             }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Horário',
+
+            }
+
           }
         }
       }
     });
 
-    // Gráfico de Doughnut Existente
-    new Chart(document.getElementById('graficoTransporte').getContext('2d'), {
-      type: 'doughnut',
+    // Função para atualizar o gráfico com base na seleção do sensor
+    document.getElementById('sensorSelect').addEventListener('change', function (event) {
+      const sensorSelecionado = event.target.value;
+
+      // Atualizar os dados do gráfico com os dados do sensor selecionado
+      grafico.data.datasets[0].data = dadosSensores[sensorSelecionado];
+
+      // Atualizar o título do gráfico
+      grafico.data.datasets[0].label = `Temperatura Atual (°C) - ${sensorSelecionado}`;
+
+      // Atualizar o gráfico
+      grafico.update();
+    });
+
+    // Gráfico de Barras Atualizado para Transporte
+    const ctxTransporte = document.getElementById('graficoTransporte').getContext('2d');
+    new Chart(ctxTransporte, {
+      type: 'bar',
       data: {
-        labels: ['Avião', 'Navio', 'Caminhão'],
+        labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril'],
         datasets: [{
-          data: [3, 1, 1],
-          backgroundColor: ['#3498db', '#9b59b6', '#f1c40f']
+          label: 'Meses',
+          data: [0, 0, 0, 1],
+          backgroundColor: ['#3498db', '#9b59b6', '#f1c40f'],
+          borderColor: ['#2980b9', '#8e44ad', '#f39c12'],
+          borderWidth: 1,
+          borderRadius: 8, // bordas arredondadas nas barras
+          barThickness: 30
         }]
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            min: 0,  // Começar do valor 1
+            max: 10, // Limitar até o valor 10
+            title: {
+              display: true,
+              text: 'Ocorrências'
+            },
+            ticks: {
+              stepSize: 1, // Definir incremento de 1
+              callback: function (value) {
+                return value; // Garantir que os valores são inteiros
+              }
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Meses'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
       }
     });
 
-    // Novo Gráfico de Área com Alertas Visíveis (Uma linha por sensor)
- // Novo Gráfico de Linha por Sensor com Alertas Visíveis
- const ctxCombined = document.getElementById('combinedChart').getContext('2d');
+    // Lógica para gerar o gráfico de linha com alertas por sensor
+    const ctxCombined = document.getElementById('combinedChart').getContext('2d');
     const combinedChart = new Chart(ctxCombined, {
       type: 'line',
       data: {
-        labels: ['06:00h', '06:15h', '06:30h', '06:45h', '07:05h', '07:20h', '07:35h', '07:50h'],
+        labels: ['06:50h', '07:05h', '07:20h', '07:35h', '07:40h', '07:55h', '08:15h', '08:30h'],
         datasets: [
           {
-            label: 'Sensor A (°C)',
-            data: [2.3, 3.1, 2.8, 3.5, 3.0, 3.2, 2.9, 3.6],
+            label: 'Sensor 001 (°C)',
+            data: [2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 2.8, 2.6],
             borderColor: 'orange',
             backgroundColor: 'rgba(255, 165, 0, 0.1)',
             tension: 0.4,
-            pointBackgroundColor: (context) => {
-              // Exemplo: Alerta no Sensor A às 07:20h
-              return context.dataIndex === 5 ? 'red' : 'orange';
-            },
-            pointBorderColor: (context) => {
-              return context.dataIndex === 5 ? 'darkred' : 'darkorange';
-            },
+            pointBackgroundColor: 'orange',
+            pointBorderColor: 'darkyorange',
             pointRadius: 5,
             pointHoverRadius: 7
           },
           {
-            label: 'Sensor B (°C)',
-            data: [9.2, 8.8, 9.5, 9.0, 8.5, 9.3, 9.1, 8.9],
+            label: 'Sensor 002 (°C)',
+            data: [2.4, 3.4, 4.4, 5.4, 6.4, 5.4, 4.4, 3.4],
             borderColor: 'steelblue',
             backgroundColor: 'rgba(70, 130, 180, 0.1)',
             tension: 0.4,
-            pointBackgroundColor: (context) => {
-              // Exemplo: Alerta no Sensor B às 06:15h
-              return context.dataIndex === 1 ? 'red' : 'steelblue';
-            },
-            pointBorderColor: (context) => {
-              return context.dataIndex === 1 ? 'darkred' : 'darkslateblue';
-            },
+            pointBackgroundColor: 'blue',
+            pointBorderColor: 'darkblue',
             pointRadius: 5,
             pointHoverRadius: 7
           },
           {
-            label: 'Sensor C (°C)',
-            data: [4.4, 4.0, 4.7, 4.2, 4.5, 4.1, 4.3, 4.6],
+            label: 'Sensor 003 (°C)',
+            data: [2.8, 3.0, 4.0, 5.0, 6.0, 4.0, 3.3, 2.6],
             borderColor: 'green',
             backgroundColor: 'rgba(0, 128, 0, 0.1)',
             tension: 0.4,
-            pointBackgroundColor: (context) => {
-              return 'green'; // Sem alertas neste exemplo
-            },
+            pointBackgroundColor: 'green',
             pointBorderColor: 'darkgreen',
             pointRadius: 5,
             pointHoverRadius: 7
           },
           {
-            label: 'Sensor D (°C)',
-            data: [5.6, 5.9, 5.3, 5.7, 6.0, 5.5, 5.8, 6.1],
+            label: 'Sensor 004 (°C)',
+            data: [3.2, 3.5, 4.3, 5.6, 6.5, 7.2, 8.3, 9.2],
             borderColor: 'purple',
             backgroundColor: 'rgba(128, 0, 128, 0.1)',
             tension: 0.4,
-            pointBackgroundColor: (context) => {
-              // Exemplo: Alerta no Sensor D às 07:50h
-              return context.dataIndex === 7 ? 'red' : 'purple';
-            },
-            pointBorderColor: (context) => {
-              return context.dataIndex === 7 ? 'darkred' : 'darkmagenta';
-            },
+            pointBackgroundColor: (context) => context.dataIndex === 7 ? 'red' : 'purple',
+            pointBorderColor: (context) => context.dataIndex === 7 ? 'darkred' : 'darkmagenta',
             pointRadius: 5,
             pointHoverRadius: 7
           }
@@ -428,14 +522,14 @@
       }
     });
 
-    // Lógica JavaScript para gerar e destacar o calendário
+
+    // Lógica para gerar o calendário com alertas dos sensores
     const calendarGrid = document.querySelector('.calendar-grid');
     const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
 
+    // Formatar data para o formato americano 'ano-mes-dia'
     function formatDate(date) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -443,7 +537,8 @@
       return `${year}-${month}-${day}`;
     }
 
-    function generateCalendar(month, year, highlightedDates, alertDates) {
+    // Gerar calendário destacando as datas com alertas
+    function generateCalendar(month, year, alertDates) {
       calendarGrid.innerHTML = '';
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const firstDayOfMonth = new Date(year, month, 1).getDay();
@@ -458,14 +553,9 @@
         dayDiv.textContent = day;
         const currentDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
-        if (highlightedDates.includes(currentDate)) {
-          dayDiv.classList.add('highlight');
-          dayDiv.title = 'Manutenção do Sensor';
-        }
-
         if (alertDates.includes(currentDate)) {
           dayDiv.classList.add('alert-date');
-          dayDiv.title = 'Alerta de Variação';
+          dayDiv.title = 'Alerta de Variação de Temperatura';
         }
 
         calendarGrid.appendChild(dayDiv);
@@ -475,16 +565,6 @@
       const legendContainer = document.createElement('div');
       legendContainer.style.marginTop = '15px';
       legendContainer.style.textAlign = 'left';
-
-      const maintenanceLegend = document.createElement('span');
-      maintenanceLegend.style.display = 'inline-block';
-      maintenanceLegend.style.width = '10px';
-      maintenanceLegend.style.height = '10px';
-      maintenanceLegend.style.borderRadius = '50%';
-      maintenanceLegend.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
-      maintenanceLegend.style.marginRight = '5px';
-
-      const maintenanceText = document.createTextNode('Manutenção');
 
       const alertLegend = document.createElement('span');
       alertLegend.style.display = 'inline-block';
@@ -497,17 +577,19 @@
 
       const alertText = document.createTextNode('Alerta');
 
-      legendContainer.appendChild(maintenanceLegend);
-      legendContainer.appendChild(maintenanceText);
       legendContainer.appendChild(alertLegend);
       legendContainer.appendChild(alertText);
 
       calendarGrid.parentNode.appendChild(legendContainer);
     }
 
-    const sensorMaintenanceDates = ['2025-04-27', '2025-05-10', '2025-05-15'];
-    const alertOccurredDates = [formatDate(tomorrow)]; // Marca amanhã como data de alerta
-    generateCalendar(currentMonth, currentYear, sensorMaintenanceDates, alertOccurredDates);
+    // Definir as datas dos alertas com base nos sensores
+    const alertOccurredDates = [
+      formatDate(new Date(today.setDate(today.getDate())))
+    ];
+
+    // Gerar calendário com alertas
+    generateCalendar(currentMonth, currentYear, alertOccurredDates);
   </script>
 </body>
 

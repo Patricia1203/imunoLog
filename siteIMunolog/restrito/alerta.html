@@ -11,6 +11,7 @@
       --secondary-color: #ecf0f1;
       --accent-color: #007bff;
       --danger-color: #e74c3c;
+      --success-color: #2ecc71;
       --bg-light: #ffffff;
       --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       --border-radius: 12px;
@@ -26,6 +27,7 @@
       font-family: 'Segoe UI', sans-serif;
       background-color: var(--secondary-color);
       display: flex;
+      min-height: 100vh;
     }
 
     /* SIDEBAR */
@@ -38,13 +40,19 @@
       flex-direction: column;
       align-items: center;
       gap: 30px;
-      min-height: 100vh;
     }
 
     .avatar {
       width: 80px;
       height: 80px;
-      background-color: #34495e;
+      overflow: hidden;
+      border-radius: 50%;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       border-radius: 50%;
     }
 
@@ -65,7 +73,6 @@
     .nav {
       list-style: none;
       width: 100%;
-      padding: 0;
     }
 
     .nav li {
@@ -128,27 +135,48 @@
     }
 
     .alert-resolved {
-      color: #2ecc71;
+      color: var(--success-color);
+      font-weight: bold;
     }
 
     .alert-unresolved {
       color: var(--danger-color);
+      font-weight: bold;
     }
 
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--accent-color);
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: default;
+    }
   </style>
 </head>
+
 <body>
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="avatar">
-        <img src="../imagem/menina.png" alt="Logo IMUNOTRACK" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+      <img src="../imagem/menina.png" alt="Logo IMUNOTRACK">
     </div>
     <div class="user-info">
-      <h3>IMUNOTRACK</h3>
+      <h3>Fernanda Caramico</h3>
       <p>imunolog@ong.org</p>
     </div>
     <ul class="nav">
-      <li><a href="./dashboard.html">Dashboard</a></li>
+      <li><a href="./dashboard.html">Painel de Desempenho</a></li>
       <li><a href="./alerta.html">Alertas</a></li>
       <li><a href="./configuracao.html">Configurações</a></li>
       <li><a href="./dados.html">Relatorio</a></li>
@@ -156,11 +184,12 @@
       <li><a href="../index.html">Sair</a></li>
     </ul>
   </div>
+
   <!-- Main Content -->
   <div class="main">
     <!-- Alertas -->
     <div class="alerts-table">
-      <h3>Alertas de Temperatura</h3>
+      <h3>Histórico de Alertas de Temperatura</h3>
       <table>
         <thead>
           <tr>
@@ -173,42 +202,74 @@
           </tr>
         </thead>
         <tbody>
+          <!-- Temperaturas e Status de acordo com a faixa -->
           <tr>
-            <td>18/04/2025</td>
-            <td>9.2°C</td>
+            <td>27/04/2025</td>
+            <td>2.3°C</td>
             <td>2°C - 8°C</td>
             <td>Transporte #1</td>
-            <td><span class="alert-severity">Fora da Faixa</span></td>
-            <td><button>Resolver</button></td>
+            <td><span class="alert-resolved">Resolvido</span></td>
+            <td><button disabled>Resolvido</button></td>
           </tr>
           <tr>
-            <td>19/04/2025</td>
-            <td>1.5°C</td>
+            <td>27/04/2025</td>
+            <td>9.2°C</td>
             <td>2°C - 8°C</td>
             <td>Transporte #2</td>
             <td><span class="alert-severity">Fora da Faixa</span></td>
             <td><button>Resolver</button></td>
           </tr>
           <tr>
-            <td>20/04/2025</td>
-            <td>7.8°C</td>
+            <td>27/04/2025</td>
+            <td>4.4°C</td>
             <td>2°C - 8°C</td>
             <td>Transporte #3</td>
             <td><span class="alert-resolved">Resolvido</span></td>
             <td><button disabled>Resolvido</button></td>
           </tr>
           <tr>
-            <td>21/04/2025</td>
-            <td>3.4°C</td>
+            <td>27/04/2025</td>
+            <td>5.6°C</td>
             <td>2°C - 8°C</td>
             <td>Transporte #4</td>
-            <td><span class="alert-unresolved">Não Resolvido</span></td>
+            <td><span class="alert-resolved">Resolvido</span></td>
+            <td><button disabled>Resolvido</button></td>
+          </tr>
+          <tr>
+            <td>27/04/2025</td>
+            <td>0.2°C</td>
+            <td>2°C - 8°C</td>
+            <td>Transporte #5</td>
+            <td><span class="alert-severity">Fora da Faixa</span></td>
             <td><button>Resolver</button></td>
+          </tr>
+          <tr>
+            <td>27/04/2025</td>
+            <td>3.5°C</td>
+            <td>2°C - 8°C</td>
+            <td>Transporte #1</td>
+            <td><span class="alert-resolved">Resolvido</span></td>
+            <td><button disabled>Resolvido</button></td>
+          </tr>
+          <tr>
+            <td>27/04/2025</td>
+            <td>6.3°C</td>
+            <td>2°C - 8°C</td>
+            <td>Transporte #2</td>
+            <td><span class="alert-resolved">Resolvido</span></td>
+            <td><button disabled>Resolvido</button></td>
+          </tr>
+          <tr>
+            <td>27/04/2025</td>
+            <td>8.0°C</td>
+            <td>2°C - 8°C</td>
+            <td>Transporte #3</td>
+            <td><span class="alert-resolved">Resolvido</span></td>
+            <td><button disabled>Resolvido</button></td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
-
 </body>
 </html>

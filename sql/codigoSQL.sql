@@ -1,148 +1,178 @@
 
 /* SCRIPT PARA ORGANIZAÇÃO DOS DADOS DA IMUNOLOG */
 
--- banco de dados:
+-- BANCO ------------------------------------------------------------------------------------ 
 
-create database bdImunolog;
+CREATE DATABASE bdImunolog; 
 
-use bdImunolog;
-create table empresa (
-idEmpresa int primary key auto_increment,
-nomeComercial varchar(30) NOT NULL,
-cnpj char(18)NOT NULL,
-cep char(9) NOT NULL,
-numero varchar(9) NOT NULL,
-complemento varchar(30),
-dataContratacao date,
-qtdSensor INT
-) AUTO_INCREMENT = 0573;
+USE bdImunolog; 
 
-create table usuario (
-idUsuario int auto_increment,
-nome varchar(50),
-usuarioRespons tinyint(1),
-senha varchar(30),
-email varchar(50),
-telefone varchar(30),
-fkEmpresa int,
-ativo tinyint(1),
-constraint fkUsuarioEmpresa foreign key (fkEmpresa) references empresa(idEmpresa),
-constraint pkUsuarioEmpresa primary key (idUsuario, fkEmpresa)
-);
+-- TABELAS ----------------------------------------------------------------------------------
+ 
+CREATE TABLE empresa ( 
+    idEmpresa INT PRIMARY KEY AUTO_INCREMENT, 
+    nomeComercial VARCHAR(100) NOT NULL, 
+    razaoSocial VARCHAR(100),
+    cnpj CHAR(18) NOT NULL UNIQUE, 
+    dataContratacao DATE, 
+    statusEmpresa ENUM('ATIVO', 'INATIVO', 'PENDENTE') DEFAULT 'ATIVO' -- Adicionado status 
+) AUTO_INCREMENT = 1001; 
 
-create table transporte (
-idTransporte varchar(30),
-tipoTransporte varchar(50),
-fkEmpresa int,
-constraint pkTransporteEmpresa primary key (idTransporte, fkEmpresa),
-constraint pkTransporteEmpresa foreign key (fkEmpresa) references empresa(idEmpresa)
-);
+CREATE TABLE endereco ( 
+    idEndereco INT PRIMARY KEY AUTO_INCREMENT,
+    fkEmpresa INT NOT NULL,
+    cep CHAR(9) NOT NULL, 
+    logradouro VARCHAR(255) NOT NULL, 
+    numero VARCHAR(10) NOT NULL, 
+    complemento VARCHAR(50), 
+    bairro VARCHAR(100), 
+    cidade VARCHAR(100) NOT NULL, 
+    estado CHAR(2) NOT NULL, -- Sigla
+	isSedePrincipal BOOLEAN NOT NULL,
+    CONSTRAINT fkEndereçoEmpresa FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
+); 
 
-create table sensor (
-idSensor int primary key auto_increment,
-nome varchar(30),
-dataInstalacao date,
-dataManutencao date,
-fkTransporte varchar(30) null,
-constraint chkSensorTransp foreign key (fkTransporte) references transporte(idTransporte)
-);
+CREATE TABLE enderecoTransporte( 
+    idEndereco INT PRIMARY KEY AUTO_INCREMENT, 
+    cep CHAR(9) NOT NULL, 
+    logradouro VARCHAR(255) NOT NULL, 
+    numero VARCHAR(10) NOT NULL, 
+    complemento VARCHAR(50), 
+    bairro VARCHAR(100), 
+    cidade VARCHAR(100) NOT NULL, 
+    estado CHAR(2) NOT NULL -- Sigla 
+); 
+ 
+CREATE TABLE contato ( 
+    idContato INT PRIMARY KEY AUTO_INCREMENT, 
+    fkEmpresa INT NOT NULL, 
+    nome VARCHAR(100) NOT NULL, 
+    cargo VARCHAR(50), 
+    email VARCHAR(100) UNIQUE, 
+    telefone1 VARCHAR(20), 
+    telefone2 VARCHAR(20),  
+    isContatoPrincipal BOOLEAN, 
+    CONSTRAINT fkContatoEmpresa FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
+); 
 
+CREATE TABLE usuario ( 
+    idUsuario INT PRIMARY KEY AUTO_INCREMENT, 
+    fkEmpresa INT NOT NULL, 
+    nome VARCHAR(100) NOT NULL, 
+    senha VARCHAR(255) NOT NULL,
+    telefone VARCHAR(20), 
+    cargo VARCHAR(50),
+    ativo BOOLEAN DEFAULT TRUE, 
+    ultimoLogin DATETIME NULL,
+    permGerencia BOOLEAN DEFAULT FALSE,
+    CONSTRAINT fkUsuarioEmpresa FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
+); 
 
-create table protocolo (
-idProtocolo int auto_increment,
-fkTransporte varchar(30),
-responsavel varchar(50),
-statusProtocolo varchar(45),
-cepPartida char(9),
-cepDestino char(9),
-dataPartida date,
-dataDestino date,
-lote int,
-qtdPLote INT,
-ocorrenciaSens varchar(150),
-constraint chkProtocoloTransp foreign key (fkTransporte) references transporte(idTransporte),
-constraint pkProtocoloTranspEmpr primary key (idProtocolo, fkTransporte)
-);
+CREATE TABLE transporte ( 
+    idTransporte INT PRIMARY KEY AUTO_INCREMENT,
+    identificadorVeiculo VARCHAR(50) NOT NULL UNIQUE,
+    fkEmpresa INT NOT NULL, 
+    tipoTransporte VARCHAR(50), 
+    marcaTransp VARCHAR(100),
+    anoFabricacao INT NULL, 
+    capacVolume DECIMAL(10, 2) NULL, 
+    capacPeso DECIMAL(10, 2) NULL, 
+    statusTransporte ENUM('OPERACIONAL', 'EM MANUTENCAO', 'INATIVO') DEFAULT 'OPERACIONAL', 
+    CONSTRAINT fkTransporteEmpresa FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa) 
+); 
 
-create table leitura (
-idLeitura int auto_increment,
-fkProtocolo int,
-fkSensor int,
-temperatura float,
-dataLeitura datetime default current_timestamp ,
-constraint fkSensorLeitura foreign key (fkSensor) references sensor(idSensor),
-constraint fkSensorProtocolo foreign key (fkProtocolo) references protocolo(idProtocolo),
-constraint pkLeituraSensor primary key (idLeitura, fkSensor, fkProtocolo));
+CREATE TABLE sensor ( 
+    idSensor INT PRIMARY KEY AUTO_INCREMENT, 
+    numeroSerie VARCHAR(100) NOT NULL UNIQUE, -- Número de série único do fabricante 
+    modelo VARCHAR(50), -- Ex: ‘LM35’, ‘DHT22’, ‘MarcaX ModeloY’ 
+    fkTransporte INT NULL, -- Sensor pode estar em estoque antes de associar a um transporte 
+    dataInstalacao DATE NULL, 
+    ultimaManutencao DATE NULL, 
+    proximaManutencaoProgramada DATE NULL, 
+    statusSensor ENUM('ATIVO', 'INATIVO', 'EM MANUTENCAO', 'FALHA', 'EM ESTOQUE') DEFAULT 'EM ESTOQUE', 
+    CONSTRAINT fkSensorTransporte FOREIGN KEY (fkTransporte) REFERENCES transporte(idTransporte)
+); 
 
-INSERT INTO empresa (nomeComercial, cnpj, cep, numero, complemento, dataContratacao, qtdSensor) VALUES
-('MedLife Farmacêutica', '12.345.678/0001-90', '0454-427', '1000', 'Sala 501', '2024-10-15', 5),
-('Vitalis Laboratórios', '98.765.432/0001-21', '0131-832', '200', 'Andar 12', '2024-11-10', 2),
-('BioTech Medicamentos', '45.678.912/0001-34', '0501-740', '1500', 'Bloco B', '2024-11-20', 4),
-('Farma Lux', '32.165.498/0001-76', '0409-210', '300', NULL, '2025-02-05', 4);
+CREATE TABLE produto ( 
+    idProduto INT PRIMARY KEY AUTO_INCREMENT, 
+    nomeProduto VARCHAR(100) NOT NULL UNIQUE DEFAULT 'Imunoglobulina', 
+    descricao TEXT, 
+    temperaturaMinima DECIMAL(4, 2) NOT NULL,  
+    temperaturaMaxima DECIMAL(4, 2) NOT NULL,  
+    instrucoesArmazenamento TEXT 
+); 
 
+CREATE TABLE statusProtocolo ( 
+    idStatusProtocolo INT PRIMARY KEY AUTO_INCREMENT, 
+    nomeStatus VARCHAR(50) NOT NULL UNIQUE, 
+    descricaoStatus TEXT 
+); 
 
-INSERT INTO usuario (nome, usuarioRespons, senha, email, telefone, fkEmpresa, ativo) VALUES
-('Carlos Alberto Silva', 1, 'MedLife@2023', 'carlos.silva@medlife.com.br', '+55 11-98765-4321', 573, 1),
-('Ana Maria Santos', 1, 'Vitalis#123', 'ana.santos@vitalis.com.br', '+55 21-99876-5432', 574, 0),
-('Roberto Carlos Ferreira', 1, 'BioTech789', 'roberto.ferreira@biotech.com.br', '+55 31-98765-1234', 575, 1),
-('Fernanda Caramico', 1, 'FarmaLux!22', 'fernanda.caramico@farmalux.com.br', '+55 41-91234-5678', 576, 1),
-('Marcos Antonio Ribeiro', 0, 'MedLife456', NULL, NULL, 573, 1),
-('Patricia Fernandes Lima', 1, 'Med@Pat123', 'patricia.lima@medlife.com.br', '+55 11-91234-5678', 573, 1),
-('Mariana Cristina Almeida', 1, 'BioTech@Mar1', 'mariana.almeida@biotech.com.br', '+55 31-92345-6789', 575, 1),
-('Rodrigo Mendes Souza', 0, 'FarmaLux@Rod', NULL, NULL, 576, 1),
-('Leonardo Augusto Barbosa', 1, 'LeoFarma#123', 'leonardo.barbosa@farmalux.com.br', '+55 41-94567-8901', 576, 1);
+CREATE TABLE protocolo ( 
+    idProtocolo INT PRIMARY KEY AUTO_INCREMENT, 
+    fkTransporte INT NOT NULL, 
+    fkStatusProtocolo INT NOT NULL,
+    fkEnderecoOrigem INT NOT NULL,
+    fkEnderecoDestino INT NOT NULL,
+    dtPartidaEstimada DATETIME NOT NULL, 
+    dtChegadaEstimada DATETIME NOT NULL, 
+    dtPartidaFeita DATETIME NULL, 
+    dtChegadaFeita DATETIME NULL, 
+    responsProtocolo VARCHAR(100),
+    observacoes TEXT, 
+    CONSTRAINT fkProtocoloTransporte FOREIGN KEY (fkTransporte) REFERENCES transporte(idTransporte), 
+    CONSTRAINT fkProtocoloStatus FOREIGN KEY (fkStatusProtocolo) REFERENCES statusProtocolo(idStatusProtocolo), 
+    CONSTRAINT fkProtocoloEndOrigem FOREIGN KEY (fkEnderecoOrigem) REFERENCES enderecoTransporte(idEndereco), 
+    CONSTRAINT fkProtocoloEndDestino FOREIGN KEY (fkEnderecoDestino) REFERENCES enderecoTransporte(idEndereco) 
+); 
 
-INSERT INTO transporte (idtransporte, tipoTransporte, fkEmpresa) VALUES
-('RS1122B', 'Caminhão Refrigerado', 573),
-('SC3344C', 'Avião Refrigerado', 574),
-('ES5566E', 'Navio Refrigerado', 575),
-('BA7788F', 'Caminhão Refrigerado', 576),
-('MT9900H', 'Avião Refrigerado', 573),
-('GO1122K', 'Navio Refrigerado', 574),
-('AM3344L', 'Caminhão Refrigerado', 575),
-('RR5566M', 'Avião Refrigerado', 576),
-('AP7788N', 'Navio Refrigerado', 573),
-('TO9900P', 'Caminhão Refrigerado', 574),
-('AC1122Q', 'Avião Refrigerado', 575),
-('RO3344R', 'Navio Refrigerado', 576),
-('DF5566S', 'Caminhão Refrigerado', 573),
-('MS7788T', 'Avião Refrigerado', 574),
-('CE9900U', 'Navio Refrigerado', 575),
-('PE1122V', 'Caminhão Refrigerado', 576);
+CREATE TABLE protocoloProduto ( 
+    idProtocoloProduto INT PRIMARY KEY AUTO_INCREMENT, 
+    fkProtocolo INT NOT NULL, 
+    fkProduto INT NOT NULL, 
+    lote VARCHAR(50) NOT NULL UNIQUE,
+    quantidade INT NOT NULL,
+    unidadeMedida VARCHAR(20) DEFAULT 'Caixa', 
+    CONSTRAINT fkProtoProd_Protocolo FOREIGN KEY (fkProtocolo) REFERENCES protocolo(idProtocolo), 
+    CONSTRAINT fkProtoProd_Produto FOREIGN KEY (fkProduto) REFERENCES produto(idProduto)
+); 
 
-INSERT INTO sensor (nome, dataInstalacao, dataManutencao, fkTransporte) VALUES
-('SensorTemp-001', '2025-01-10', '2025-04-15', 'RS1122B'),
-('SensorTemp-002', '2025-02-15', NULL, 'RS1122B'),
-('SensorTemp-003', '2025-04-20', NULL, 'ES5566E'),
-('SensorTemp-004', '2025-04-12', NULL, 'BA7788F'),
-('SensorTemp-005', '2025-02-18', NULL, 'MT9900H'),
-('SensorTemp-006', '2025-02-01', NULL, 'GO1122K'),
-('SensorTemp-007', '2025-04-05', NULL, 'AM3344L'),
-('SensorTemp-008', '2025-04-15', NULL, 'RR5566M'),
-('SensorTemp-009', '2025-02-20', NULL, 'AP7788N'),
-('SensorTemp-010', '2025-04-10', NULL, 'AC1122Q'),
-('SensorTemp-011', '2025-04-15', NULL, 'RO3344R'),
-('SensorTemp-012', '2025-02-01', NULL, 'DF5566S'),
-('SensorTemp-013', '2025-03-05', NULL, 'MS7788T'),
-('SensorTemp-014', '2025-04-10', NULL, 'CE9900U'),
-('SensorTemp-015', '2025-04-15', NULL, 'PE1122V');
+CREATE TABLE leitura ( 
+    idLeitura INT PRIMARY KEY AUTO_INCREMENT,
+    fkProtocolo INT NOT NULL, 
+    fkSensor INT NOT NULL, 
+    temperatura DECIMAL(5, 2) NOT NULL,
+    dtLeitura DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+    CONSTRAINT fkLeituraProtocolo FOREIGN KEY (fkProtocolo) REFERENCES protocolo(idProtocolo) ON DELETE CASCADE, 
+    CONSTRAINT fkLeituraSensor FOREIGN KEY (fkSensor) REFERENCES sensor(idSensor)  
+); 
 
-INSERT INTO protocolo (responsavel, statusProtocolo, cepPartida, cepDestino, dataPartida, dataDestino, fkTransporte, lote,qtdPLote, ocorrenciaSens) VALUES
-('Rafael Cunha Lopes', 'EM TRANSITO', '04547-000', '01311-000', '2023-04-28', '2023-06-01', 'RS1122B', 25, 21,  'Sensor com falha na leitura da temperatura - Arumado'),
-('Ana Maria Santos', 'A CAMINHO DO LOCAL DE CARREGAMENTO', '01311-000', '05010-000', '2023-04-28', '2023-05-28', 'SC3344C', 30, 32, 'Nenhuma Ocorrência'),
-('Rafael Cunha0 Lopes', 'A CAMINHO DO LOCAL DE CARREGAMENTO', '05010-000', '04094-000', '2023-04-28', '2023-06-05', 'ES5566E', 39, 27, 'Nenhuma Ocorrência'),
-('Beatriz Moura', 'CANCELADO', '04547-000', '01311-000', '2023-04-25', '2023-05-30', 'MT9900H', 28, 26, 'Nenhuma Ocorrência'),
-('Bruno Martins Pereira', 'A CAMINHO DO LOCAL DE CARREGAMENTO', '01311-000', '05010-000', '2023-04-28', '2023-04-28', 'GO1122K', 31, 34, 'Nenhuma Ocorrência'),
-('Larissa Souza Barbosa', 'INICIANDO TRANSPORTE', '04094-000', '04547-000', '2025-04-28', '2025-04-30', 'BA7788F', 30, 29,'Nenhuma Ocorrência');
+-- DADOS -------------------------------------------------------------------------------------------------------------------------------------------------------
 
-INSERT INTO leitura (fkProtocolo, fkSensor, temperatura, dataLeitura) VALUES
-(1, 1, 5.2, '2023-06-01 08:00:00'),
-(1, 1, 5.0, '2023-06-01 08:05:00'),
-(1, 1, 4.9, '2023-06-01 08:10:00'),
-(1, 1, 5.1, '2023-06-01 08:15:00'),
-(1, 1, 5.4, '2023-06-01 08:20:00'),
-(1, 1, 5.6, '2023-06-01 08:25:00'),
-(1, 1, 5.7, '2023-06-01 08:30:00'),
-(1, 1, 5.9, '2023-06-01 08:35:00'),
-(1, 1, 6.0, '2023-06-01 08:40:00'),
-(1, 1, 6.2, '2023-06-01 08:45:00');
+INSERT INTO statusProtocolo(nomeStatus, descricaoStatus) VALUES 
+('PENDENTE', 'Protocolo criado, aguardando início do transporte.'), 
+('CARREGAMENTO', 'Veículo no local de origem para carregamento.'), 
+('EM TRANSITO', 'Transporte em andamento.'), 
+('DESCARREGAMENTO', 'Veículo no local de destino para descarregamento.'), 
+('CONCLUIDO', 'Transporte finalizado com sucesso.'), 
+('CANCELADO', 'Transporte foi cancelado.'), 
+('ATRASADO', 'Transporte está atrasado em relação ao previsto.'), 
+('ALERTA TEMPERATURA', 'Houve registro de temperatura fora do range durante o transporte.'); 
+
+INSERT INTO produto (nomeProduto, descricao, temperaturaMinima, temperaturaMaxima, instrucoesArmazenamento) VALUES 
+('Imunoglobulina Humana', 'Solução injetável de imunoglobulina humana G', 2.00, 8.00, 'Manter refrigerado entre 2°C e 8°C. Não congelar. Proteger da luz.'),
+('Imunoglobulina Canina', 'Solução injetável de imunoglobulina canina G', 2.00, 8.00, 'Manter refrigerado entre 2°C e 8°C. Não congelar. Proteger da luz.'); 
+
+INSERT INTO empresa (nomeComercial, razaoSocial, cnpj, dataContratacao, statusEmpresa) VALUES 
+('MedLife Farma', 'MedLife Farmaceutica Ltda', '12.345.678/0001-90', '2024-10-15', 'ATIVO'); 
+
+INSERT INTO endereco (fkEmpresa, cep, logradouro, numero, complemento, bairro, cidade, estado, isSedePrincipal) VALUES 
+(1001, '04547-000', 'Rua Exemplo Partida', '123', 'Bloco A', 'Vila Olímpia', 'São Paulo', 'SP', TRUE);
+ 
+INSERT INTO contato (fkEmpresa, nome, cargo, email, telefone1, isContatoPrincipal) VALUES 
+(1001, 'Carlos Alberto Silva', 'Gerente Logística', 'carlos.silva@medlife.com.br', '+55 11-98765-4321', TRUE), 
+(1001, 'Patricia Fernandes Lima', 'Farmacêutica Responsável', 'patricia.lima@medlife.com.br', '+55 11-91234-5678', FALSE); 
+
+INSERT INTO usuario (fkEmpresa, nome, senha, telefone, cargo, ativo, permGerencia) VALUES 
+(1001, 'Carlos Alberto Silva', '$2b$10$abcdefghijklmnopqrstuvwx...', '+55 11-98765-4321', 'Gerente Logística', TRUE, TRUE), 
+(1001, 'Marcos Antonio Ribeiro', '$2b$10$zyxwutsrqponmlkjihgfedc...', NULL, 'Operador', TRUE, FALSE); 

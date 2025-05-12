@@ -3,16 +3,15 @@
 
 -- BANCO ------------------------------------------------------------------------------------ 
 
-CREATE DATABASE bdImunolog; 
+CREATE DATABASE bdImunolog;
 
-USE bdImunolog; 
+USE bdImunolog;
 
 -- TABELAS ----------------------------------------------------------------------------------
  
 CREATE TABLE empresa ( 
     idEmpresa INT PRIMARY KEY AUTO_INCREMENT, 
     nomeComercial VARCHAR(100) NOT NULL, 
-    razaoSocial VARCHAR(100),
     cnpj CHAR(18) NOT NULL UNIQUE, 
     dataContratacao DATE, 
     statusEmpresa ENUM('ATIVO', 'INATIVO', 'PENDENTE') DEFAULT 'ATIVO' -- Adicionado status 

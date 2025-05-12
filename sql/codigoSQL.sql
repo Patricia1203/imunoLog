@@ -26,7 +26,7 @@ CREATE TABLE endereco (
     complemento VARCHAR(50), 
     bairro VARCHAR(100), 
     cidade VARCHAR(100) NOT NULL, 
-    estado CHAR(2) NOT NULL, -- Sigla
+    UF CHAR(2) NOT NULL, -- Sigla
 	isSedePrincipal BOOLEAN NOT NULL,
     CONSTRAINT fkEndereçoEmpresa FOREIGN KEY (fkEmpresa) REFERENCES empresa(idEmpresa)
 ); 
@@ -39,7 +39,7 @@ CREATE TABLE enderecoTransporte(
     complemento VARCHAR(50), 
     bairro VARCHAR(100), 
     cidade VARCHAR(100) NOT NULL, 
-    estado CHAR(2) NOT NULL -- Sigla 
+    UF CHAR(2) NOT NULL -- Sigla 
 ); 
  
 CREATE TABLE contato ( 
@@ -58,6 +58,7 @@ CREATE TABLE usuario (
     idUsuario INT PRIMARY KEY AUTO_INCREMENT, 
     fkEmpresa INT NOT NULL, 
     nome VARCHAR(100) NOT NULL, 
+    email varchar(45),
     senha VARCHAR(255) NOT NULL,
     telefone VARCHAR(20), 
     cargo VARCHAR(50),

@@ -26,6 +26,7 @@
       font-family: 'Segoe UI', sans-serif;
       background-color: var(--secondary-color);
       display: flex;
+      min-height: 100vh;
     }
 
     .sidebar {
@@ -37,7 +38,6 @@
       flex-direction: column;
       align-items: center;
       gap: 30px;
-      min-height: 100vh;
     }
 
     .avatar {
@@ -86,9 +86,9 @@
 
     .main-content {
       flex: 1;
+      padding: 40px;
       display: flex;
       flex-direction: column;
-      padding: 40px;
     }
 
     h1 {
@@ -96,12 +96,6 @@
       margin-bottom: 20px;
     }
 
-    .form-container {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: first baseline;
-    }
 
     .form-container input,
     .form-container select,
@@ -119,6 +113,7 @@
       color: white;
       border: none;
       cursor: pointer;
+      transition: background 0.3s;
     }
 
     .form-container button:hover {
@@ -128,7 +123,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 30px;
     }
 
     table, th, td {
@@ -144,10 +139,15 @@
       background-color: var(--accent-color);
       color: white;
     }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
+
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="avatar">
@@ -155,17 +155,20 @@
         style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
     </div>
     <div class="user-info">
-      <h3>IMUNOTRACK</h3>
+      <h3>Fernanda Caramico</h3>
       <p>imunolog@ong.org</p>
     </div>
     <ul class="nav">
-      <li><a href="./dashboard.html">Dashboard</a></li>
-      <li><a href="#">Alertas</a></li>
-      <li><a href="#">Configurações</a></li>
-      <li><a href="#">Relatorio</a></li>
-      <li><a href="./usuario.html">Usuário</a></li>
+
+      <li><a href="./dashboard.html">Painel de Desempenho</a></li>
+      <li><a href="./alerta.html">Alertas</a></li>
+      <li><a href="./configuracao.html">Configurações</a></li>
+      <li><a href="./dados.html">Relatorio</a></li>
+      <li><a href="./usuario.html">Usuario</a></li>
+
       <li><a href="../index.html">Sair</a></li>
     </ul>
+  </div>
   </div>
 
   <!-- Main Content -->
@@ -173,12 +176,18 @@
     <h1>Cadastro de Usuário</h1>
     <div class="form-container">
       <input type="text" id="nome" placeholder="Nome Completo" />
-      <select id="tipoUsuario">
+
+      <select id="tipoUsuario" onchange="verificarTipo()">
         <option value="">Selecione o Tipo de Usuário</option>
-        <option value="Básico">Básico</option>
-        <option value="Avançado">Avançado</option>
+        <option value="Colaborador">Colaborador</option>
+        <option value="Administrador">Representante</option>
       </select>
-      <input type="text" id="email" placeholder="Email Para Envio do login e senha">
+
+      <div id="camposResponsavel" class="hidden">
+        <input type="email" id="email" placeholder="Email" />
+        <input type="text" id="telefone" placeholder="Telefone" />
+      </div>
+
       <button onclick="cadastrarUsuario()">Cadastrar Usuário</button>
 
       <table>
@@ -188,54 +197,56 @@
             <th>Nome</th>
             <th>Tipo</th>
             <th>Email</th>
+            <th>Telefone</th>
           </tr>
         </thead>
         <tbody id="tabelaUsuarios">
           <tr>
             <td>#U001</td>
             <td>Ana Souza</td>
-            <td>Básico</td>
-            <td>ana.souza@gmail.com</td>
+            <td>Colaborador</td>
+            <td>-</td>
+            <td>-</td>
           </tr>
           <tr>
             <td>#U002</td>
             <td>Bruno Lima</td>
-            <td>Avançado</td>
-            <td>bruna.lima@gmail.com</td>
-          </tr>
-          <tr>
-            <td>#U003</td>
-            <td>Carla Mendes</td>
-            <td>Básico</td>
-            <td>carla.mendes@gmail.com</td>
-          </tr>
-          <tr>
-            <td>#U004</td>
-            <td>Diego Santos</td>
-            <td>Avançado</td>
-            <td>bruna.lima@gmail.com</td>
-          </tr>
-          <tr>
-            <td>#U005</td>
-            <td>Eduarda Pires</td>
-            <td>Básico</td>
-            <td>eduarda.pires@gmail.com</td>
+            <td>Administrador</td>
+            <td>bruno.lima@gmail.com</td>
+            <td>(11) 99999-9999</td>
           </tr>
         </tbody>
       </table>
+
     </div>
   </div>
 
   <script>
-    let contadorID = 6;
+    let contadorID = 3;
+
+    function verificarTipo() {
+      const tipo = document.getElementById('tipoUsuario').value;
+      const camposResponsavel = document.getElementById('camposResponsavel');
+      if (tipo === 'Administrador') {
+        camposResponsavel.classList.remove('hidden');
+      } else {
+        camposResponsavel.classList.add('hidden');
+      }
+    }
 
     function cadastrarUsuario() {
       const nome = document.getElementById('nome').value.trim();
       const tipo = document.getElementById('tipoUsuario').value;
-      const email = document.getElementById('email').value
+      const email = document.getElementById('email').value.trim();
+      const telefone = document.getElementById('telefone').value.trim();
 
-      if (!nome || !tipo || !email ) {
-        alert('Por favor, preencha todos os campos.');
+      if (!nome || !tipo) {
+        alert('Preencha o nome e selecione o tipo de usuário.');
+        return;
+      }
+
+      if (tipo === 'Administrador' && (!email || !telefone)) {
+        alert('Preencha o email e telefone para cadastrar um Administrador.');
         return;
       }
 
@@ -246,20 +257,25 @@
       const nomeCell = novaLinha.insertCell(1);
       const tipoCell = novaLinha.insertCell(2);
       const emailCell = novaLinha.insertCell(3);
+      const telefoneCell = novaLinha.insertCell(4);
 
       idCell.innerText = `#U00${contadorID}`;
       nomeCell.innerText = nome;
       tipoCell.innerText = tipo;
-      emailCell.innerText = email;
+      emailCell.innerText = tipo === 'Administrador' ? email : '-';
+      telefoneCell.innerText = tipo === 'Administrador' ? telefone : '-';
 
       contadorID++;
 
-      // Limpa os campos após cadastro
+      // Limpa campos
       document.getElementById('nome').value = '';
       document.getElementById('tipoUsuario').value = '';
-      document.getElementById('email').value = ''
+      document.getElementById('email').value = '';
+      document.getElementById('telefone').value = '';
+      verificarTipo();
     }
   </script>
+
 </body>
 
 </html>

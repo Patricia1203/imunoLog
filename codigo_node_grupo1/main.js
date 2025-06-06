@@ -19,11 +19,11 @@ const serial = async (
     // conexão com o banco de dados MySQL
     let poolBancoDados = mysql.createPool(
         {
-            host: 'localhost',
-            user: 'ceo',
+            host: '127.0.0.1',
+            user: 'equipe',
             password: 'Sptech#2024',
             database: 'bdImunolog',
-            port: 3306
+            port: 3307
         }
     ).promise();
 
@@ -63,7 +63,7 @@ const serial = async (
 
             // este insert irá inserir os dados na tabela "medida"
             await poolBancoDados.execute(
-                'INSERT INTO leitura(fkSensor, fkProtocolo, temperatura) VALUES (4, 6, ?)',
+                'INSERT INTO leitura(fkSensor, fkProtocolo, temperatura) VALUES (1, 1, ?)',
                 [sensorAnalogico]
             );
             console.log("valores inseridos no banco: ", sensorAnalogico /*+ sensorDigital*/);

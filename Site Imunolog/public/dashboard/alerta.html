@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alertas - IMUNOLOG</title>
+  <link rel="stylesheet" href="../css/dashboards.css" />
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="avatar">
+      <img src="https://i.pravatar.cc/80" alt="Avatar Usuário" />
+    </div>
+    <div class="user-info">
+      <h3><span id="empresaId">usuário</span>!</h3>
+    </div>
+    <ul class="nav">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="alerta.html" style="background-color: #34495e;">Alertas</a></li>
+      <li><a href="protocolos.html">Protocolos</a></li>
+      <li><a href="sair.html">Sair</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <h1>Alertas de Temperatura Fora do Padrão</h1>
+
+    <!-- Filtros -->
+    <section id="filtros"
+      style="background: var(--bg-light); padding: 15px; border-radius: var(--border-radius); box-shadow: var(--shadow);">
+      <form id="formFiltros" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+        <label>
+          Data Inicial:
+          <input type="date" id="dataInicial" name="dataInicial" />
+        </label>
+        <label>
+          Data Final:
+          <input type="date" id="dataFinal" name="dataFinal" />
+        </label>
+        <label>
+          Status do Protocolo:
+          <select id="statusProtocolo" name="statusProtocolo">
+            <option value="">Todos</option>
+            <option value="EM TRANSITO">Em Trânsito</option>
+            <option value="A CAMINHO DO LOCAL DE CARREGAMENTO">A Caminho</option>
+            <option value="FINALIZADO">Finalizado</option>
+            <option value="INICIANDO TRANSPORTE">Iniciando</option>
+          </select>
+        </label>
+        <label>
+          Tipo de Transporte:
+          <select id="tipoTransporte" name="tipoTransporte">
+            <option value="">Todos</option>
+            <option value="Caminhão Refrigerado">Caminhão Refrigerado</option>
+            <option value="Avião Refrigerado">Avião Refrigerado</option>
+            <option value="Navio Refrigerado">Navio Refrigerado</option>
+          </select>
+        </label>
+        <button type="submit"
+          style="background-color: var(--accent-color); color: white; padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer;">Filtrar</button>
+      </form>
+    </section>
+
+    <!-- Lista de Alertas -->
+    <section id="lista-alertas" style="margin-top: 30px;">
+      <h2>Protocolos com Leituras Fora do Padrão</h2>
+      <div id="alertasContainer" style="display: grid; gap: 15px; margin-top: 15px;">
+        <!-- Preenchido via JS -->
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const empresaId = sessionStorage.ID_USUARIO;
+
+    window.onload = function () {
+      if (!empresaId) {
+        alert("Usuário não identificado. Faça login novamente.");
+        return;
+      }
+    }
+
+    // Mostrar nome do usuário na nav
+    const nomeUsuario = sessionStorage.NOME_USUARIO;
+    document.getElementById("empresaId").innerText = nomeUsuario || "usuário";
+
+    const dadosAlertas = [
+      {
+        idProtocolo: 1,
+        transporteId: 'RS1122B',
+        tipoTransporte: 'Caminhão Refrigerado',
+        responsavel: 'Rafael Cunha Lopes',
+        statusProtocolo: 'EM TRANSITO',
+        ocorrenciaSens: 'Sensor falhou e foi reiniciado',
+        dataPartida: '2023-04-28',
+        dataDestino: '2023-06-01',
+        leituras: [
+          { sensor: 'SensorTemp-001', temperatura: 6.2, dataLeitura: '2023-06-01 08:45:00' },
+          { sensor: 'SensorTemp-002', temperatura: 8.1, dataLeitura: '2023-06-01 08:30:00' }
+        ]
+      },
+      {
+        idProtocolo: 4,
+        transporteId: 'BA7788F',
+        tipoTransporte: 'Caminhão Refrigerado',
+        responsavel: 'Larissa Souza Barbosa',
+        statusProtocolo: 'INICIANDO TRANSPORTE',
+        ocorrenciaSens: 'Nenhuma ocorrência',
+        dataPartida: '2025-04-28',
+        dataDestino: '2025-04-30',
+        leituras: [
+          { sensor: 'SensorTemp-004', temperatura: -2.5, dataLeitura: '2025-04-28 09:00:00' }
+        ]
+      }
+    ];
+
+    function criarCardAlerta(alerta) {
+      const temperaturasFora = alerta.leituras.filter(l => l.temperatura < 4 || l.temperatura > 6);
+      if (temperaturasFora.length === 0) return null;
+
+      const container = document.createElement('div');
+      container.className = 'kpi';
+      container.style.borderLeft = '5px solid var(--danger-color)';
+
+      const titulo = document.createElement('h3');
+      titulo.textContent = `Protocolo #${alerta.idProtocolo} - Transporte ${alerta.transporteId}`;
+
+      const status = document.createElement('p');
+      status.innerHTML = `<strong>Status:</strong> ${alerta.statusProtocolo}`;
+
+      const responsavel = document.createElement('p');
+      responsavel.innerHTML = `<strong>Responsável:</strong> ${alerta.responsavel}`;
+
+      const ocorrencia = document.createElement('p');
+      ocorrencia.innerHTML = `<strong>Ocorrências:</strong> ${alerta.ocorrenciaSens}`;
+      ocorrencia.style.color = alerta.ocorrenciaSens.toLowerCase() === 'nenhuma ocorrência' ? '#555' : 'var(--danger-color)';
+      ocorrencia.style.fontWeight = '600';
+
+      const listaTemp = document.createElement('ul');
+      listaTemp.innerHTML = '<strong>Temperaturas fora do padrão:</strong>';
+      temperaturasFora.forEach(l => {
+        const li = document.createElement('li');
+        li.textContent = `${l.sensor}: ${l.temperatura}°C em ${new Date(l.dataLeitura).toLocaleString()}`;
+        listaTemp.appendChild(li);
+      });
+
+      container.appendChild(titulo);
+      container.appendChild(status);
+      container.appendChild(responsavel);
+      container.appendChild(ocorrencia);
+      container.appendChild(listaTemp);
+
+      return container;
+    }
+
+    function renderizarAlertas(filtros = {}) {
+      const container = document.getElementById('alertasContainer');
+      container.innerHTML = '';
+
+      let alertasFiltrados = dadosAlertas;
+
+      if (filtros.dataInicial) {
+        alertasFiltrados = alertasFiltrados.filter(a => new Date(a.dataPartida) >= new Date(filtros.dataInicial));
+      }
+      if (filtros.dataFinal) {
+        alertasFiltrados = alertasFiltrados.filter(a => new Date(a.dataDestino) <= new Date(filtros.dataFinal));
+      }
+      if (filtros.statusProtocolo) {
+        alertasFiltrados = alertasFiltrados.filter(a => a.statusProtocolo === filtros.statusProtocolo);
+      }
+      if (filtros.tipoTransporte) {
+        alertasFiltrados = alertasFiltrados.filter(a => a.tipoTransporte === filtros.tipoTransporte);
+      }
+
+      let count = 0;
+      alertasFiltrados.forEach(alerta => {
+        const card = criarCardAlerta(alerta);
+        if (card) {
+          container.appendChild(card);
+          count++;
+        }
+      });
+
+      if (count === 0) {
+        container.innerHTML = '<p>Nenhum alerta encontrado com os filtros aplicados.</p>';
+      }
+    }
+
+    document.getElementById('formFiltros').addEventListener('submit', e => {
+      e.preventDefault();
+      const filtros = {
+        dataInicial: e.target.dataInicial.value,
+        dataFinal: e.target.dataFinal.value,
+        statusProtocolo: e.target.statusProtocolo.value,
+        tipoTransporte: e.target.tipoTransporte.value
+      };
+      renderizarAlertas(filtros);
+    });
+
+    renderizarAlertas();
+  </script>
+</body>
+
+</html>

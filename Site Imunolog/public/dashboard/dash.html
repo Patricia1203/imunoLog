@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="./assets/imagem/medicamento.png" />
+  <title>Dashboard IMUNOLOG</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="../css/dashboards.css" />
+  <style>
+    /* Estilos para o sino de alerta e dropdown */
+    .alerta-topo {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      cursor: pointer;
+      color: #ff4d4f;
+      z-index: 1000;
+    }
+
+    .alerta-topo svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .badge-alerta {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ff4d4f;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 50%;
+      padding: 2px 6px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .alertas-dropdown {
+      position: absolute;
+      top: 36px;
+      right: 0;
+      width: 280px;
+      background: white;
+      border: 1px solid #ddd;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 14px;
+      color: #333;
+      display: none;
+    }
+
+    .alertas-dropdown h4 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-weight: bold;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 4px;
+    }
+
+    .alertas-dropdown ul {
+      margin: 0;
+      padding-left: 18px;
+      list-style-type: disc;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .alertas-dropdown li {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="avatar">
+      <img src="../assets/imagem/menina.png" alt="Logo IMUNOTRACK" />
+    </div>
+    <div class="user-info">
+      <h3>Olá, <span id="nomeUsuario">usuário</span>!</h3>
+    </div>
+    <ul class="nav">
+      <li><a href="./dashboard.html">Painel de Desempenho</a></li>
+      <li><a href="./alerta.html">Alertas</a></li>
+      <li><a href="./transporte.html">Protocolo</a></li>
+      <li><a href="../index.html">Sair</a></li>
+    </ul>
+  </div>
+
+  <!-- Sino de alerta fixo no topo direito -->
+  <div class="alerta-topo" id="sinoAlerta">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+      <path
+        d="M8 16a2 2 0 0 0 1.985-1.75H6.015A2 2 0 0 0 8 16zm.104-14.5a1 1 0 0 0-2.208 0 5.002 5.002 0 0 0-4.479 4.49c-.015.238-.026.48-.035.722-.005.123-.009.25-.012.378a5.002 5.002 0 0 0 4.52 4.52c.13.003.258.007.38.012.24.008.484.02.722.035a5.002 5.002 0 0 0 4.489-4.49 1 1 0 0 0-1.14-1.14 3.502 3.502 0 0 1-3.216 3.216 3.502 3.502 0 0 1-3.216-3.216z" />
+    </svg>
+    <span class="badge-alerta" id="badgeAlerta">3</span>
+
+    <div id="listaAlertas" class="alertas-dropdown">
+      <h4>Alertas Recentes</h4>
+      <ul id="ulAlertas">
+        <li>Sensor 12 apresentou temperatura elevada.</li>
+        <li>Protocolo 45 está atrasado.</li>
+        <li>Nova atualização disponível.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <h1>Dashboard IMUNOLOG</h1>
+
+    <div id="kpis">
+      <div class="kpi">
+        <h2 id="totalLeituras">0</h2>
+        <p>Total de Leituras</p>
+      </div>
+      <div class="kpi">
+        <h2 id="totalProtocolosAtivos">0</h2>
+        <p>Protocolos Ativos</p>
+      </div>
+      <div class="kpi">
+        <h2 id="totalSensores">0</h2>
+        <p>Sensores</p>
+      </div>
+      <div class="kpi">
+        <h2 id="mediaTemperatura">0.00</h2>
+        <p>Média Temperatura</p>
+      </div>
+    </div>
+
+    <div class="dashboard-cards">
+      <!-- Gráfico de linha em destaque -->
+      <div class="chart-card chart-destaque">
+        <canvas id="chartLinhaArduino"></canvas>
+      </div>
+
+      <!-- Outros gráficos em tamanho padrão -->
+      <div class="chart-card">
+        <canvas id="chartOcorrenciasMensais"></canvas>
+      </div>
+      <div class="chart-card">
+        <canvas id="chartStatusProtocolos"></canvas>
+      </div>
+      <div class="chart-card">
+        <canvas id="chartSensoresPorProtocolo"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS dos Gráficos -->
+  <script>
+    const idEmpresa = 1;
+    const usuarioId = sessionStorage.ID_USUARIO;
+
+    window.onload = function () {
+      if (!usuarioId) {
+        alert("Usuário não identificado. Faça login novamente.");
+        return;
+      }
+    }
+    // Mostrar nome do usuário na nav
+    const nome = sessionStorage.NOME_USUARIO;
+    document.getElementById("nomeUsuario").innerText = nome || "usuário";
+
+
+    async function carregarKPIs() {
+      const res = await fetch(`/dashboard/kpis/${idEmpresa}`);
+      const data = await res.json();
+      document.getElementById('totalLeituras').textContent = data.totalLeituras;
+      document.getElementById('totalProtocolosAtivos').textContent = data.totalProtocolosAtivos;
+      document.getElementById('totalSensores').textContent = data.totalSensores;
+      document.getElementById('mediaTemperatura').textContent = data.mediaTemperatura.toFixed(2);
+    }
+
+    async function carregarGraficoOcorrenciasMensais() {
+      const res = await fetch(`/dashboard/ocorrenciasMensais/${idEmpresa}`);
+      const dados = await res.json();
+      const labels = dados.map(item => `Mês ${item.mes}`);
+      const ocorrencias = dados.map(item => item.quantidade);
+
+      new Chart(document.getElementById('chartOcorrenciasMensais'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Ocorrências por Mês',
+            data: ocorrencias,
+            backgroundColor: 'rgba(255, 159, 64, 0.6)'
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: 'Ocorrências Mensais'
+            }
+          }
+        }
+      });
+    }
+
+    async function carregarGraficoStatus() {
+      const res = await fetch(`/dashboard/graficoStatusProtocolos/${idEmpresa}`);
+      const dados = await res.json();
+      const labels = dados.map(item => item.status);
+      const quantidades = dados.map(item => item.total);
+
+      new Chart(document.getElementById('chartStatusProtocolos'), {
+        type: 'pie',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Status Protocolos',
+            data: quantidades,
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.6)',
+              'rgba(54, 162, 235, 0.6)',
+              'rgba(255, 206, 86, 0.6)'
+            ]
+          }]
+        },
+        options: {
+          plugins: {
+            title: {
+              display: true,
+              text: 'Status dos Protocolos'
+            }
+          }
+        }
+      });
+    }
+
+    async function carregarGraficoSensoresPorProtocolo() {
+      const res = await fetch(`/dashboard/sensoresPorProtocolo/${idEmpresa}`);
+      const dados = await res.json();
+      const labels = dados.map(item => item.nomeProtocolo);
+      const sensores = dados.map(item => item.quantidade);
+
+      new Chart(document.getElementById('chartSensoresPorProtocolo'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Sensores por Protocolo',
+            data: sensores,
+            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: 'Sensores por Protocolo'
+            }
+          }
+        }
+      });
+    }
+
+    async function carregarGraficoLinhaArduino() {
+      const res = await fetch(`/dashboard/graficoLinhaArduino/${idEmpresa}`);
+      const dados = await res.json();
+      const labels = dados.map(item => new Date(item.dataLeitura).toLocaleString());
+      const temperaturas = dados.map(item => item.temperatura);
+
+      new Chart(document.getElementById('chartLinhaArduino'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Temperatura',
+            data: temperaturas,
+            fill: false,
+            borderColor: 'rgba(255, 99, 132, 0.8)',
+            tension: 0.1
+          }]
+        },
+        options: {
+          plugins: {
+            title: {
+              display: true,
+              text: 'Temperatura ao longo do tempo'
+            }
+          },
+          scales: {
+            x: {
+              display: true,
+              title: {
+                display: true,
+                text: 'Data/Hora'
+              }
+            },
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: 'Temperatura (°C)'
+              },
+              beginAtZero: false
+            }
+          }
+        }
+      });
+    }
+
+    // Função para carregar alertas (exemplo fixo, pode trocar para fetch do backend)
+    function carregarAlertas() {
+      // Aqui você pode fazer um fetch no backend para pegar alertas reais
+      // Exemplo:
+      /*
+      fetch('/alertas/recentes')
+        .then(res => res.json())
+        .then(alertas => {
+          const ul = document.getElementById('ulAlertas');
+          ul.innerHTML = '';
+          alertas.forEach(alerta => {
+            const li = document.createElement('li');
+            li.textContent = alerta.mensagem;
+            ul.appendChild(li);
+          });
+          document.getElementById('badgeAlerta').textContent = alertas.length;
+        });
+      */
+    }
+
+    carregarKPIs();
+    carregarGraficoOcorrenciasMensais();
+    carregarGraficoStatus();
+    carregarGraficoSensoresPorProtocolo();
+    carregarGraficoLinhaArduino();
+    carregarAlertas();
+
+    // Lógica do clique no sino para mostrar/esconder alertas
+    const sino = document.getElementById('sinoAlerta');
+    const lista = document.getElementById('listaAlertas');
+
+    sino.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (lista.style.display === 'none' || lista.style.display === '') {
+        lista.style.display = 'block';
+      } else {
+        lista.style.display = 'none';
+      }
+    });
+
+    // Fecha o dropdown se clicar fora do sino
+    document.addEventListener('click', () => {
+      lista.style.display = 'none';
+    });
+  </script>
+</body>
+
+</html>

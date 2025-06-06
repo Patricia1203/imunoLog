@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transporte e Protocolo</title>
+    <link rel="stylesheet" href="../css/dashboards.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        /* ... seu CSS continua igual ... */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #map {
+            height: 300px;
+            margin-top: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        .dashboard-cards {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .kpi {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            width: 150px;
+            text-align: center;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="user-info">
+            <div class="avatar"><img src="user.jpg" alt="Avatar" /></div>
+            <h3>Olá, Usuário</h3>
+            <p>Dashboard</p>
+        </div>
+        <ul class="nav">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="transporte-protocolo.html">Transportes</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h1>Transportes da Empresa</h1>
+        <button onclick="abrirModal()" class="btn-accent">Cadastrar Protocolo</button>
+    </div>
+
+    <!-- Modal -->
+    <div id="modalProtocolo" class="modal hidden">
+        <div class="modal-content">
+            <h2>Novo Protocolo</h2>
+            <form id="formProtocolo" autocomplete="off">
+                <label>Transporte:</label>
+                <select name="idTransporte" required>
+                    <option value="">Selecione o transporte</option>
+                    <option value="1">Caminhão</option>
+                    <option value="2">Avião</option>
+                    <option value="3">Navio</option>
+                </select>
+
+                <label>Responsável:</label>
+                <input type="text" name="responsavel" required>
+
+                <label>Status:</label>
+                <input type="text" name="statusProtocolo" required>
+
+                <label>CEP Partida:</label>
+                <input type="text" name="cepPartida" required maxlength="9" placeholder="Ex: 12345-678">
+
+                <label>CEP Destino:</label>
+                <input type="text" name="cepDestino" required maxlength="9" placeholder="Ex: 12345-678">
+
+                <label>Data Partida:</label>
+                <input type="date" name="dataPartida" required>
+
+                <label>Data Destino:</label>
+                <input type="date" name="dataDestino">
+
+                <label>Ocorrência Sensor:</label>
+                <textarea name="ocorrenciaSens"></textarea>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn-accent">Salvar</button>
+                    <button type="button" onclick="fecharModal()" class="btn-cancel">Cancelar</button>
+                </div>
+            </form>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        let map;
+        let routeLayer;
+        let partidaMarker;
+        let destinoMarker;
+
+        function abrirModal() {
+            document.getElementById('modalProtocolo').classList.remove('hidden');
+            if (!map) {
+                initMap();
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById('modalProtocolo').classList.add('hidden');
+        }
+
+        document.getElementById('formProtocolo').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target).entries());
+
+            // Ajuste simples para o backend: data.idTransporte já está ok como número em string, se quiser converte.
+            data.idTransporte = Number(data.idTransporte);
+
+            try {
+                const res = await fetch('/protocolo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    alert('Protocolo cadastrado!');
+                    fecharModal();
+                    location.reload();
+                } else {
+                    const err = await res.json();
+                    alert('Erro ao cadastrar protocolo: ' + (err.erro || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                alert('Erro na conexão: ' + error.message);
+            }
+        });
+
+        function initMap() {
+            map = L.map('map').setView([-14.2350, -51.9253], 4); // Brasil central
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+        }
+
+        function atualizarRota() {
+            const cepPartida = document.querySelector('input[name="cepPartida"]').value.trim();
+            const cepDestino = document.querySelector('input[name="cepDestino"]').value.trim();
+
+            if (cepPartida.length >= 8 && cepDestino.length >= 8) {
+                Promise.all([
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${cepPartida}, Brazil`).then(r => r.json()),
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${cepDestino}, Brazil`).then(r => r.json())
+                ]).then(([partidaData, destinoData]) => {
+                    if (partidaData.length && destinoData.length) {
+                        const partida = [parseFloat(partidaData[0].lat), parseFloat(partidaData[0].lon)];
+                        const destino = [parseFloat(destinoData[0].lat), parseFloat(destinoData[0].lon)];
+
+                        map.setView(partida, 6);
+
+                        if (routeLayer) {
+                            map.removeLayer(routeLayer);
+                        }
+                        if (partidaMarker) {
+                            map.removeLayer(partidaMarker);
+                        }
+                        if (destinoMarker) {
+                            map.removeLayer(destinoMarker);
+                        }
+
+                        routeLayer = L.polyline([partida, destino], { color: 'blue' }).addTo(map);
+                        partidaMarker = L.marker(partida).addTo(map).bindPopup("Partida").openPopup();
+                        destinoMarker = L.marker(destino).addTo(map).bindPopup("Destino");
+                    }
+                }).catch(() => {
+                    // Fail silently ou avise usuário que CEP é inválido
+                });
+            }
+        }
+
+        document.querySelector('input[name="cepPartida"]').addEventListener('blur', atualizarRota);
+        document.querySelector('input[name="cepDestino"]').addEventListener('blur', atualizarRota);
+    </script>
+</body>
+
+</html>

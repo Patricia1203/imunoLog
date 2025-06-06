@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Imunolog | Login</title>
+
+    <script src="./js/sessao.js"></script>
+
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="icon" href="./assets/imagem/medicamento.png">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+
+    <style>
+        .login {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 130px;
+        }
+
+        .formulario-container {
+            width: 100%;
+            max-width: 650px;
+            padding: 55px;
+            border-radius: 12px;
+            background-color: #f8f9fa;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .formulario h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .formulario p {
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .campo label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .input-grande {
+            padding: 20px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .botao {
+            background-color: #007bff;
+            color: white;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .botao:hover {
+            background-color: #0056b3;
+        }
+
+        /* Mensagem de sucesso fixa canto superior direito */
+        .card_sucesso {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px 25px;
+            border-left: 6px solid #28a745;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            font-weight: 600;
+            min-width: 250px;
+        }
+
+        /* Mensagem de erro fixa canto superior direito */
+        .card_erro {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ffd6d6;
+            color: #b30000;
+            padding: 15px 25px;
+            border-left: 6px solid #e60000;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            font-weight: 600;
+            min-width: 250px;
+        }
+
+        /* Oculta a div de loading inicialmente */
+        #div_aguardar {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!--Header-->
+
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="./assets/imagem/logo.png" alt="Medicare">
+                <span>IMUNOLOG</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="sobre.html">Sobre Nós</a></li>
+                    <li><a href="simulador.html">Calculadora</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+            </nav>
+            <div class="cta">
+                <a href="./login.html"><button class="sign-in">Login</button></a>
+                <a href="./cadastro.html"><button class="sign-in">Cadastro</button></a>
+            </div>
+        </div>
+    </header>
+
+    <br><br><br><br><br><br>
+    <div class="login">
+        <div class="container">
+            <div class="formulario-container">
+                <div class="formulario">
+                    <h2>Olá de volta!</h2>
+                    <p>Preencha os campos para acessar sua conta.</p>
+
+                    <div class="campo">
+                        <label for="email_input">E-mail:</label>
+                        <input id="email_input" type="email" placeholder="Digite seu e-mail" class="input-grande" />
+                    </div>
+
+                    <div class="campo">
+                        <label for="senha_input">Senha:</label>
+                        <input id="senha_input" type="password" placeholder="Digite sua senha" class="input-grande" />
+                    </div>
+
+                    <button class="botao" onclick="entrar()">Entrar</button>
+
+                    <div id="div_aguardar" class="loading-div">
+                        <img src="./assets/circle-loading.gif" id="loading-gif" />
+                    </div>
+
+                    <div class="card_sucesso" id="cardSucesso">
+                        <span id="mensagem_sucesso"></span>
+                    </div>
+
+                    <div class="card_erro" id="cardErro">
+                        <span id="mensagem_erro"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+
+
+    function sumirMensagem() {
+        esconderMensagemErro();
+        esconderMensagemSucesso();
+    }
+
+    function entrar() {
+        function mostrarSucesso(msg) {
+            const cardSucesso = document.getElementById("cardSucesso");
+            const mensagemSucesso = document.getElementById("mensagem_sucesso");
+
+            mensagemSucesso.innerHTML = msg;
+            cardSucesso.style.display = "block";
+
+            esconderMensagemErro();
+            setTimeout(esconderMensagemSucesso, 3000);
+        }
+
+        function esconderMensagemSucesso() {
+            document.getElementById("cardSucesso").style.display = "none";
+        }
+
+        function mostrarErro(msg) {
+            const cardErro = document.getElementById("cardErro");
+            const mensagemErro = document.getElementById("mensagem_erro");
+
+            mensagemErro.innerHTML = msg;
+            cardErro.style.display = "block";
+
+            esconderMensagemSucesso();
+            setTimeout(esconderMensagemErro, 3000);
+        }
+
+        function esconderMensagemErro() {
+            document.getElementById("cardErro").style.display = "none";
+        }
+
+        function aguardar() {
+            document.getElementById("div_aguardar").style.display = "block";
+        }
+
+        function finalizarAguardar() {
+            document.getElementById("div_aguardar").style.display = "none";
+        }
+
+        aguardar();
+
+        var emailVar = email_input.value;
+        var senhaVar = senha_input.value;
+
+        if (emailVar == "" || senhaVar == "") {
+            mostrarErro("Preencha todos os campos.");
+            finalizarAguardar();
+            return false;
+        }
+
+        fetch("/usuarios/autenticar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                emailServer: emailVar,
+                senhaServer: senhaVar
+            })
+        }).then(function (resposta) {
+            if (resposta.ok) {
+                resposta.json().then(json => {
+                    sessionStorage.EMAIL_USUARIO = json.email;
+                    sessionStorage.NOME_USUARIO = json.nome;
+                    sessionStorage.ID_USUARIO = json.idUsuario;
+                    sessionStorage.ID_EMPRESA = json.fkEmpresa;
+
+                    mostrarSucesso("Login realizado com sucesso!");
+
+                    setTimeout(function () {
+                        window.location = "./dashboard/dash.html";
+                    }, 1000);
+                });
+            } else {
+                resposta.text().then(texto => {
+                    mostrarErro(texto);
+                    finalizarAguardar();
+                });
+            }
+        }).catch(function (erro) {
+            console.log(erro);
+            mostrarErro("Erro ao tentar fazer login.");
+            finalizarAguardar();
+        });
+
+        return false;
+    }
+
+</script>

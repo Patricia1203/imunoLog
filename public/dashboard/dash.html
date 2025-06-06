@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="./assets/imagem/medicamento.png" />
+  <title>Dashboard IMUNOLOG</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="../css/dashboards.css" />
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="avatar">
+      <img src="../assets/imagem/menina.png" alt="Logo IMUNOTRACK" />
+    </div>
+    <div class="user-info">
+      <h3>Fernanda Caramico</h3>
+      <p>imunolog@ong.org</p>
+    </div>
+    <ul class="nav">
+      <li><a href="./dashboard.html">Painel de Desempenho</a></li>
+      <li><a href="./alerta.html">Alertas</a></li>
+      <li><a href="./transporte.html">Protocolo</a></li>
+      <li><a href="../index.html">Sair</a></li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <h1>Dashboard IMUNOLOG</h1>
+
+    <div id="kpis">
+      <div class="kpi">
+        <h2 id="totalLeituras">0</h2>
+        <p>Total de Leituras</p>
+      </div>
+      <div class="kpi">
+        <h2 id="totalProtocolosAtivos">0</h2>
+        <p>Protocolos Ativos</p>
+      </div>
+      <div class="kpi">
+        <h2 id="totalSensores">0</h2>
+        <p>Sensores</p>
+      </div>
+      <div class="kpi">
+        <h2 id="mediaTemperatura">0.00</h2>
+        <p>Média Temperatura</p>
+      </div>
+    </div>
+
+    <div class="dashboard-cards">
+      <!-- Gráfico de linha em destaque -->
+      <div class="chart-card chart-destaque">
+        <canvas id="chartLinhaArduino"></canvas>
+      </div>
+
+      <!-- Outros gráficos em tamanho padrão -->
+      <div class="chart-card">
+        <canvas id="chartOcorrenciasMensais"></canvas>
+      </div>
+      <div class="chart-card">
+        <canvas id="chartStatusProtocolos"></canvas>
+      </div>
+      <div class="chart-card">
+        <canvas id="chartSensoresPorProtocolo"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS dos Gráficos -->
+  <script>
+    const empresaId = 1; // Atualize para o ID dinâmico conforme necessário
+
+    async function carregarKPIs() {
+      const res = await fetch(`/dashboard/kpis/${empresaId}`);
+      const data = await res.json();
+      document.getElementById('totalLeituras').textContent = data.totalLeituras;
+      document.getElementById('totalProtocolosAtivos').textContent = data.totalProtocolosAtivos;
+      document.getElementById('totalSensores').textContent = data.totalSensores;
+      document.getElementById('mediaTemperatura').textContent = data.mediaTemperatura.toFixed(2);
+    }
+
+    async function carregarGraficoOcorrenciasMensais() {
+      const res = await fetch(`/dashboard/ocorrenciasMensais/${empresaId}`);
+      const dados = await res.json();
+      const labels = dados.map(item => `Mês ${item.mes}`);
+      const ocorrencias = dados.map(item => item.quantidade);
+
+      new Chart(document.getElementById('chartOcorrenciasMensais'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Ocorrências por Mês',
+            data: ocorrencias,
+            backgroundColor: 'rgba(255, 159, 64, 0.6)'
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true } },
+          plugins: { title: { display: true, text: 'Ocorrências Mensais' } }
+        }
+      });
+    }
+
+    async function carregarGraficoStatus() {
+      const res = await fetch(`/dashboard/graficoStatusProtocolos/${empresaId}`);
+      const dados = await res.json();
+      const labels = dados.map(item => item.status);
+      const quantidades = dados.map(item => item.total);
+
+      new Chart(document.getElementById('chartStatusProtocolos'), {
+        type: 'pie',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Status Protocolos',
+            data: quantidades,
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.6)',
+              'rgba(54, 162, 235, 0.6)',
+              'rgba(255, 206, 86, 0.6)'
+            ]
+          }]
+        },
+        options: {
+          plugins: {
+            title: { display: true, text: 'Status dos Protocolos' }
+          }
+        }
+      });
+    }
+
+    async function carregarGraficoSensoresPorProtocolo() {
+      const res = await fetch(`/dashboard/sensoresPorProtocolo/${empresaId}`);
+      const dados = await res.json();
+      const labels = dados.map(item => item.nomeProtocolo);
+      const sensores = dados.map(item => item.quantidade);
+
+      new Chart(document.getElementById('chartSensoresPorProtocolo'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Sensores por Protocolo',
+            data: sensores,
+            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+          }]
+        },
+        options: {
+          scales: { y: { beginAtZero: true } },
+          plugins: { title: { display: true, text: 'Sensores por Protocolo' } }
+        }
+      });
+    }
+
+    async function carregarGraficoLinhaArduino() {
+      const res = await fetch(`/dashboard/graficoLinhaArduino/${empresaId}`);
+      const dados = await res.json();
+      const labels = dados.map(item => new Date(item.dataLeitura).toLocaleString());
+      const temperaturas = dados.map(item => item.temperatura);
+
+      new Chart(document.getElementById('chartLinhaArduino'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Temperatura (Arduino)',
+            data: temperaturas,
+            fill: false,
+            borderColor: 'rgba(153, 102, 255, 1)',
+            tension: 0.1,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+          }]
+        },
+        options: {
+          plugins: {
+            title: {
+              display: true,
+              text: 'Temperatura Capturada em Tempo Real',
+              font: { size: 18 }
+            },
+            legend: { display: true }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              title: {
+                display: true,
+                text: 'Temperatura (°C)'
+              }
+            },
+            x: {
+              ticks: {
+                maxRotation: 45,
+                minRotation: 30,
+                maxTicksLimit: 10
+              }
+            }
+          },
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    async function carregarProtocolos() {
+    try {
+        const resposta = await fetch('/protocolo');
+        const protocolos = await resposta.json();
+
+        const container = document.getElementById('listaProtocolos');
+        container.innerHTML = '';
+
+        protocolos.forEach(protocolo => {
+            const div = document.createElement('div');
+            div.classList.add('protocolo-card');
+            div.innerHTML = `
+                <strong>Responsável:</strong> ${protocolo.responsavel}<br>
+                <strong>Status:</strong> ${protocolo.statusProtocolo}<br>
+                <strong>Partida:</strong> ${protocolo.cepPartida} em ${new Date(protocolo.dataPartida).toLocaleDateString()}<br>
+                <strong>Destino:</strong> ${protocolo.cepDestino} ${protocolo.dataDestino ? `em ${new Date(protocolo.dataDestino).toLocaleDateString()}` : ''}<br>
+                <strong>Ocorrência:</strong> ${protocolo.ocorrenciaSens || 'Nenhuma'}
+            `;
+            container.appendChild(div);
+        });
+    } catch (erro) {
+        console.error('Erro ao carregar protocolos:', erro);
+        document.getElementById('listaProtocolos').innerHTML = '<p>Erro ao carregar protocolos.</p>';
+    }
+}
+
+// Chamada automática ao abrir a página
+document.addEventListener('DOMContentLoaded', carregarProtocolos);
+
+    // Inicialização
+    carregarKPIs();
+    carregarGraficoOcorrenciasMensais();
+    carregarGraficoStatus();
+    carregarGraficoSensoresPorProtocolo();
+    carregarGraficoLinhaArduino();
+  </script>
+</body>
+
+</html>

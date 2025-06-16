@@ -243,6 +243,24 @@
             return false;
         }
 
+        // Verificação admin local
+        if (emailVar === "imunolog@gmail.com" && senhaVar === "admin123") {
+            mostrarSucesso("Login de administrador realizado com sucesso!");
+
+            // Ajusta as variáveis de sessão para admin, se quiser
+            sessionStorage.EMAIL_USUARIO = emailVar;
+            sessionStorage.NOME_USUARIO = "Administrador";
+            sessionStorage.ID_USUARIO = "admin"; // Pode ser um valor fixo ou especial
+            sessionStorage.ID_EMPRESA = "admin";
+
+            setTimeout(function () {
+                window.location = "./BobIA/public/index.html"; // Ajuste o caminho da dashboard admin aqui
+            }, 1000);
+
+            return false; // interrompe a execução do fetch
+        }
+
+        // Caso normal, consulta o backend
         fetch("/usuarios/autenticar", {
             method: "POST",
             headers: {
@@ -280,5 +298,6 @@
 
         return false;
     }
+
 
 </script>

@@ -12,28 +12,6 @@ module.exports = {
     }
   },
 
-  async ocorrenciasMensais(req, res) {
-    const { empresaId } = req.params;
-    try {
-      const dados = await Dashboard.ocorrenciasMensais(empresaId);
-      res.json(dados);
-    } catch (erro) {
-      console.error('Erro ao buscar ocorrências mensais:', erro);
-      res.status(500).send('Erro ao buscar gráfico');
-    }
-  },
-
-  async statusProtocolos(req, res) {
-    const { empresaId } = req.params;
-    try {
-      const dados = await Dashboard.statusProtocolos(empresaId);
-      res.json(dados);
-    } catch (erro) {
-      console.error('Erro ao buscar status protocolos:', erro);
-      res.status(500).send('Erro ao buscar gráfico');
-    }
-  },
-
   async graficoLinhaArduino(req, res) {
     const { empresaId } = req.params;
     try {
@@ -44,4 +22,5 @@ module.exports = {
       res.status(500).send('Erro ao buscar gráfico de linha');
     }
   }
+  
 };

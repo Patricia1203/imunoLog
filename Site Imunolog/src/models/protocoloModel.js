@@ -1,36 +1,44 @@
 var database = require("../database/config");
 
 function listar() {
-  var instrucaoSql = `SELECT * FROM protocolo;`;
+  var instrucaoSql = `SELECT * FROM protocolo`;
   return database.executar(instrucaoSql);
 }
 
 function buscarPorId(id) {
-  var instrucaoSql = `SELECT * FROM protocolo WHERE id = ${id};`;
+  var instrucaoSql = `SELECT * FROM protocolo WHERE idProtocolo = ${id}`;
   return database.executar(instrucaoSql);
 }
 
-function cadastrar(idTransporte, responsavel, statusProtocolo, cepPartida, cepDestino, dataPartida, dataDestino, ocorrenciaSens) {
+function cadastrar(
+  nomeProtocolo,
+  descricao,
+  dataCriacao,
+  fkEmpresa
+) {
   var instrucaoSql = `
-    INSERT INTO protocolo 
-      (idTransporte, responsavel, statusProtocolo, cepPartida, cepDestino, dataPartida, dataDestino, ocorrenciaSens)
-    VALUES 
-      (${idTransporte}, '${responsavel}', '${statusProtocolo}', '${cepPartida}', '${cepDestino}', '${dataPartida}', ${dataDestino ? `'${dataDestino}'` : null}, '${ocorrenciaSens}');
+    INSERT INTO protocolo (
+      nomeProtocolo, descricao, dataCriacao, fkEmpresa
+    ) VALUES (
+      '${nomeProtocolo}', '${descricao}', '${dataCriacao}', ${fkEmpresa}
+    );
   `;
   console.log("Executando a instrução SQL: \n" + instrucaoSql);
   return database.executar(instrucaoSql);
 }
 
-function atualizar(id, descricao) {
+function atualizar(idProtocolo, nomeProtocolo, descricao) {
   var instrucaoSql = `
-    UPDATE protocolo SET descricao = '${descricao}' WHERE id = ${id};
+    UPDATE protocolo 
+    SET nomeProtocolo = '${nomeProtocolo}', descricao = '${descricao}'
+    WHERE idProtocolo = ${idProtocolo};
   `;
   console.log("Executando a instrução SQL: \n" + instrucaoSql);
   return database.executar(instrucaoSql);
 }
 
-function deletar(id) {
-  var instrucaoSql = `DELETE FROM protocolo WHERE id = ${id};`;
+function deletar(idProtocolo) {
+  var instrucaoSql = `DELETE FROM protocolo WHERE idProtocolo = ${idProtocolo}`;
   console.log("Executando a instrução SQL: \n" + instrucaoSql);
   return database.executar(instrucaoSql);
 }

@@ -1,0 +1,179 @@
+<!-- dashboard.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Admin</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #2d2d2d;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .kpi-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .kpi {
+            background-color: #eee;
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .charts {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        canvas {
+            flex: 1;
+            max-width: 100%;
+            background-color: #fff;
+            border: 1px solid #ccc;
+        }
+
+        .alertas {
+            margin-top: 30px;
+        }
+
+        .alertas ul {
+            padding: 0;
+            list-style: none;
+        }
+
+        .alertas li {
+            margin-bottom: 5px;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Admin</h2>
+        <ul>
+            <li><a href="./adminDash.html">Dashboard</a></li>
+            <li><a href="http://localhost:3331/">Suporte</a></li>
+            <li><a href="../index.html">Sair</a></li>
+        </ul>
+    </div>
+
+    <div class="main">
+        <div class="kpi-container">
+            <div class="kpi" id="usuarios">Usuários: 0</div>
+            <div class="kpi" id="transportes">Transportes: 0</div>
+            <div class="kpi" id="alertas">Alertas: 0</div>
+        </div>
+
+        <div class="charts">
+            <canvas id="graficoLinha"></canvas>
+            <canvas id="graficoPizza"></canvas>
+        </div>
+
+        <div class="alertas">
+            <h3>Alertas Recentes</h3>
+            <ul id="listaAlertas"></ul>
+        </div>
+    </div>
+
+    <script>
+        const idEmpresa = 1; // Defina dinamicamente com login real
+
+        async function carregarKPIs() {
+            const res = await fetch(`/admin/kpis/${idEmpresa}`);
+            const dados = await res.json();
+            document.getElementById("usuarios").innerText = `Usuários: ${dados.totalUsuarios}`;
+            document.getElementById("transportes").innerText = `Transportes: ${dados.totalTransportes}`;
+            document.getElementById("alertas").innerText = `Alertas: ${dados.totalAlertas}`;
+        }
+
+        async function carregarGraficoLinha() {
+            const res = await fetch(`/admin/graficoLinha/${idEmpresa}`);
+            const dados = await res.json();
+
+            new Chart(document.getElementById("graficoLinha"), {
+                type: 'line',
+                data: {
+                    labels: dados.map(d => d.data),
+                    datasets: [{
+                        label: 'Temp Média',
+                        data: dados.map(d => d.temperatura),
+                        borderColor: 'blue',
+                        fill: false
+                    }]
+                }
+            });
+        }
+
+        async function carregarGraficoPizza() {
+            const res = await fetch(`/admin/graficoPizza/${idEmpresa}`);
+            const dados = await res.json();
+
+            new Chart(document.getElementById("graficoPizza"), {
+                type: 'pie',
+                data: {
+                    labels: dados.map(d => d.status),
+                    datasets: [{
+                        data: dados.map(d => d.total),
+                        backgroundColor: ['green', 'red', 'orange']
+                    }]
+                }
+            });
+        }
+
+        async function carregarAlertas() {
+            const res = await fetch(`/admin/alertasRecentes/${idEmpresa}`);
+            const dados = await res.json();
+            const lista = document.getElementById("listaAlertas");
+            lista.innerHTML = "";
+            dados.forEach(alerta => {
+                const item = document.createElement("li");
+                item.textContent = `${alerta.descricao} - ${alerta.data}`;
+                lista.appendChild(item);
+            });
+        }
+
+
+        carregarKPIs();
+        carregarGraficoLinha();
+        carregarGraficoPizza();
+        carregarAlertas();
+    </script>
+</body>
+
+</html>
